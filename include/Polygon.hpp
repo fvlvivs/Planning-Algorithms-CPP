@@ -41,16 +41,15 @@ public:
     bool isPointIncluded(Point<T, dim>& point);
     void getEdges(std::vector<Edge<T>>& edges) {edges = edges_;}
     void getVertices(std::vector<Point<T, dim>>& vertices) {vertices = vertices_;}
+    void moveToPoint(Point<T, dim>& point);
 
 private:
-
     void orderVertices();
     void createEdges();
 
     std::vector<Point<T, dim>> vertices_;
     std::vector<Edge<T>> edges_;
-
-
+    Point<T, dim> centroid_;
 };
 
 
@@ -66,17 +65,17 @@ Polygon<T>::Polygon(std::vector<Point<T, dim>> vertices) {
 template <typename T>
 void Polygon<T>::orderVertices() {
     size_t n = vertices_.size();
-    Point<T, dim> centroid;
+    centroid_ = Point<T, dim>::Zero();
     for (auto &vertex: vertices_) {
-        centroid += vertex;
+        centroid_ += vertex;
     }
-    centroid /= n;
+    centroid_ /= n;
 
     std::vector<std::pair<size_t, T>> angles;
     angles.reserve(n);
     for (size_t i=0; i<n; i++) {
         angles.emplace_back(
-            i, atan2(vertices_[i].y() - centroid.y(), vertices_[i].x() - centroid.x())
+            i, atan2(vertices_[i].y() - centroid_.y(), vertices_[i].x() - centroid_.x())
             );
     }
 
@@ -127,6 +126,16 @@ bool Polygon<T>::isPointIncluded(Point<T, dim>& point) {
         return false;
 
     return isTriangleCCW(vertices_[low], vertices_[high], point);
+}
+
+// void moveToPoint(Point<T, dim>& point)
+template <typename T>
+void Polygon<T>::moveToPoint(Point<T, dim>& point) {
+    Point<T, dim> delta = point - centroid_;
+    centroid_ = point;
+    for (auto &vertex: vertices_)
+        vertex += delta;
+
 }
 
 
