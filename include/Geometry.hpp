@@ -1,3 +1,25 @@
+// MIT License
+//
+// Copyright (c) 2023 Fulvio Di Luzio (fulvio.diluzio@gmail.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 
 #ifndef GEOMETRY_HPP
 #define GEOMETRY_HPP
@@ -17,16 +39,19 @@ struct Point : public Eigen::Vector<T, dim> {
 
     using value_type = T;
     static constexpr size_t dimension = dim;
+
+    T& x() {return this->coeffRef(0);}
+    T& y() {return this->coeffRef(1);}
 };
 
 // Edge
 template <typename T>
 struct Edge {
-    T a;
-    T b;
+    Point<T, 2> a;
+    Point<T, 2> b;
 
     Edge() = default;
-    Edge(T a, T b) : a(a), b(b) {}
+    Edge(Point<T, 2> a, Point<T, 2> b) : a(a), b(b) {}
 };
 
 // Node
@@ -88,9 +113,5 @@ typedef Edge<Node<double, 2>> Edge2f;
 typedef Edge<Node<double, 2>> Edge2d;
 typedef PointDistribution<float, 2> PointDistribution2f;
 typedef PointDistribution<double, 2> PointDistribution2d;
-
-
-
-
 
 #endif //GEOMETRY_HPP
