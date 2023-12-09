@@ -39,6 +39,8 @@ public:
     explicit Polygon(std::vector<Point<T, dim>> vertices);
 
     bool isPointIncluded(Point<T, dim>& point);
+    void getEdges(std::vector<Edge<T>>& edges) {edges = edges_;}
+    void getVertices(std::vector<Point<T, dim>>& vertices) {vertices = vertices_;}
 
 private:
 
