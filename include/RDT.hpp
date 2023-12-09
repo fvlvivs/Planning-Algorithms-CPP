@@ -38,6 +38,7 @@ class RDT {
     typedef Point<T, dim> PointT;
     typedef Node<T, dim> NodeT;
     typedef PointDistribution<T, dim> PointDistributionT;
+    typedef Polygon<T> ObstacleT;
     using Metric = T(*)(NodeT*, NodeT*);
 
 public:
@@ -50,12 +51,16 @@ public:
     bool run();
     void getNodes(std::vector<NodeT*>& nodes) {nodes = nodes_;}
     void getGoal(NodeT*& goal) {goal = goal_;}
+    void addObstacle(ObstacleT obstacle) {obstacles_.push_back(obstacle);}
+    void getObstacles(std::vector<ObstacleT>& obstacles) {obstacles = obstacles_;}
 
 
 private:
     void sampleRandomPoint(NodeT*& point);
     void projectRandomPointTowardsNearest(NodeT*& point, NodeT*& nearest_point) const;
     void rewiring(NodeT*& point);
+    bool doesPointLieInFreeSpace(NodeT*& point);
+    bool doesPathLieInFreeSpace(NodeT*& point, NodeT*& new_point);
 
     NodeT* start_;
     NodeT* goal_;
@@ -67,7 +72,9 @@ private:
     T goal_range_radius_ {0.5};
     T neighbour_radius_ {0.3};
     T rewiring_radius_ {0.5};
+    T path_check_resolution_ {0.01};
     std::vector<NodeT*> nodes_;
+    std::vector<ObstacleT> obstacles_;
 };
 
 
@@ -144,6 +151,32 @@ void RDT<T, dim>::rewiring(NodeT*& point) {
     }
 }
 
+// bool doesPointLieInFreeSpace(NodeT*& point)
+template<typename T, size_t dim>
+bool RDT<T, dim>::doesPointLieInFreeSpace(NodeT*& point) {
+    for (auto &obstacle: obstacles_) {
+        if (obstacle.isPointIncluded(*point)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// bool doesPathLieInFreeSpace(NodeT*& point1, NodeT*& point2)
+template<typename T, size_t dim>
+bool RDT<T, dim>::doesPathLieInFreeSpace(NodeT*& point, NodeT*& new_point) {
+    T dist = metric_(point, new_point);
+    size_t N = dist / path_check_resolution_;
+    T delta = path_check_resolution_ / dist;
+    NodeT* n = new NodeT;
+    for (size_t i=1; i<N; i++) {
+        *n = (1 - delta * i) * (*point) + delta * i * (*new_point);
+        if (!doesPointLieInFreeSpace(n))
+            return false;
+    }
+    return true;
+}
+
 // bool run()
 template <typename T, size_t dim>
 bool RDT<T, dim>::run() {
@@ -155,6 +188,13 @@ bool RDT<T, dim>::run() {
         NodeT* nearest_neighbor = new NodeT;
         if (findNearestNeighbor(point, nearest_neighbor)) {
             projectRandomPointTowardsNearest(point, nearest_neighbor);
+
+            // check if point and nearest_neighbor are in free space
+            // as well as the path between them
+            if (!doesPointLieInFreeSpace(point)
+                    || !doesPathLieInFreeSpace(point, nearest_neighbor))
+                continue;
+
             // update cost
             point->parent = nearest_neighbor;
             T cost_metric = metric_(point, nearest_neighbor);
