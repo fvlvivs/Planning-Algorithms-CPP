@@ -31,6 +31,7 @@
 
 #include "utils.hpp"
 #include "Geometry.hpp"
+#include "SeparatingAxis.hpp"
 
 
 template <typename T, size_t dim>
@@ -39,6 +40,7 @@ class RDT {
     typedef Node<T, dim> NodeT;
     typedef PointDistribution<T, dim> PointDistributionT;
     typedef Polygon<T> ObstacleT;
+    typedef Polygon<T> SystemT;
     using Metric = T(*)(NodeT*, NodeT*);
 
 public:
@@ -53,6 +55,7 @@ public:
     void getGoal(NodeT*& goal) {goal = goal_;}
     void addObstacle(ObstacleT obstacle) {obstacles_.push_back(obstacle);}
     void getObstacles(std::vector<ObstacleT>& obstacles) {obstacles = obstacles_;}
+    void setSystem(SystemT system) {system_ = system;}
 
 
 private:
@@ -61,9 +64,11 @@ private:
     void rewiring(NodeT*& point);
     bool doesPointLieInFreeSpace(NodeT*& point);
     bool doesPathLieInFreeSpace(NodeT*& point, NodeT*& new_point);
+    bool isSystemInCollision(NodeT*& point);
 
     NodeT* start_;
     NodeT* goal_;
+    SystemT system_;  // agent/robot/...
 
     Metric metric_ {euclideanMetric};
     PointDistributionT point_distribution_;
@@ -155,9 +160,12 @@ void RDT<T, dim>::rewiring(NodeT*& point) {
 template<typename T, size_t dim>
 bool RDT<T, dim>::doesPointLieInFreeSpace(NodeT*& point) {
     for (auto &obstacle: obstacles_) {
-        if (obstacle.isPointIncluded(*point)) {
+        if (obstacle.isPointIncluded(*point))
             return false;
-        }
+
+        system_.moveToPoint(*point);
+        if (arePolygonsColliding(system_, obstacle))
+            return false;
     }
     return true;
 }
@@ -175,6 +183,17 @@ bool RDT<T, dim>::doesPathLieInFreeSpace(NodeT*& point, NodeT*& new_point) {
             return false;
     }
     return true;
+}
+
+// bool isSystemInCollision(NodeT*& point)
+template<typename T, size_t dim>
+bool RDT<T, dim>::isSystemInCollision(NodeT*& point) {
+    system_.moveToPoint(*point);
+    for (auto &obstacle: obstacles_) {
+        if (arePolygonsColliding(system_, obstacle))
+            return true;
+    }
+    return false;
 }
 
 // bool run()
