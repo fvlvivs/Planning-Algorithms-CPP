@@ -39,7 +39,7 @@ bool arePolygonsColliding(Polygon<T> &polygon_a, Polygon<T> &polygon_b) {
     // check with respect to first polygon
     polygon_a.getEdges(edges);
     for (auto& edge: edges) {
-        Point<T, 2> diff = (edge.b - edge.a);
+        Point<T, 2> diff = edge.b - edge.a;
         Point<T, 2> normal(diff.y(), -diff.x());
         if (!doesPolygonCrossAxis(edge.a, normal, polygon_b))
             return false;
@@ -49,7 +49,7 @@ bool arePolygonsColliding(Polygon<T> &polygon_a, Polygon<T> &polygon_b) {
     edges.clear();
     polygon_b.getEdges(edges);
     for (auto& edge: edges) {
-        Point<T, 2> diff = (edge.b - edge.a);
+        Point<T, 2> diff = edge.b - edge.a;
         Point<T, 2> normal(diff.y(), -diff.x());
         if (!doesPolygonCrossAxis(edge.a, normal, polygon_a))
             return false;
@@ -65,7 +65,6 @@ bool doesPolygonCrossAxis(Point<T, 2> &point, Point<T, 2> &axis, Polygon<T> &pol
     bool positive = false;
     bool negative = false;
     size_t positive_count = 0;
-    // size_t negative_count = 0;
     for (auto& vertex: vertices) {
         T dot_product = axis.dot(vertex - point);
         if (dot_product > 0) {
@@ -78,7 +77,7 @@ bool doesPolygonCrossAxis(Point<T, 2> &point, Point<T, 2> &axis, Polygon<T> &pol
         if (positive && negative)
             return true;
     }
-    return positive_count <= 0;
+    return positive_count > 0;
 }
 
 
