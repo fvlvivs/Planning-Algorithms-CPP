@@ -56,6 +56,7 @@ public:
     void addObstacle(ObstacleT obstacle) {obstacles_.push_back(obstacle);}
     void getObstacles(std::vector<ObstacleT>& obstacles) {obstacles = obstacles_;}
     void setSystem(SystemT system) {system_ = system;}
+    void optimizePath();
 
 
 private:
@@ -226,12 +227,36 @@ bool RDT<T, dim>::run() {
                 goal_->parent = point;
                 goal_->cost = point->cost + metric_(point, goal_);
                 printf("Goal found in %zu iterations\n", iter);
+                optimizePath();
                 return true;
             }
         }
         iter++;
     }
     return false;
+}
+
+// void optimizePath()
+template<typename T, size_t dim>
+void RDT<T, dim>::optimizePath() {
+    NodeT* node = goal_;
+    NodeT* n1 = new NodeT;
+    NodeT* n2 = new NodeT;
+    while (node != nullptr) {
+        n1 = node->parent;
+        if (n1 == nullptr)
+            break;
+        n2 = n1->parent;
+        if (n2 == nullptr)
+            break;
+
+        if (doesPathLieInFreeSpace(node, n2)) {
+            node->parent = node->parent->parent;
+            node->cost = n2->cost + metric_(node, n2);
+            continue;
+        }
+        node = n1;
+    }
 }
 
 
