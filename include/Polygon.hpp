@@ -41,7 +41,7 @@ public:
     bool isPointIncluded(Point<T, dim>& point);
     void getEdges(std::vector<Edge<T>>& edges) {edges = edges_;}
     void getVertices(std::vector<Point<T, dim>>& vertices) {vertices = vertices_;}
-    void moveToPoint(Point<T, dim>& point);
+    void moveToPoint(Point<T, dim> point);
 
 private:
     void orderVertices();
@@ -61,7 +61,7 @@ Polygon<T>::Polygon(std::vector<Point<T, dim>> vertices) {
     createEdges();
 }
 
-// void orderVertices()
+// void orderVertices() [counter-clockwise]
 template <typename T>
 void Polygon<T>::orderVertices() {
     size_t n = vertices_.size();
@@ -80,7 +80,7 @@ void Polygon<T>::orderVertices() {
     }
 
     std::sort(angles.begin(), angles.end(), [](auto &left, auto &right) {
-        return left.second < right.second;
+        return left.second > right.second;
     });
 
     std::vector<Point<T, dim>> ordered_vertices;
@@ -130,12 +130,13 @@ bool Polygon<T>::isPointIncluded(Point<T, dim>& point) {
 
 // void moveToPoint(Point<T, dim>& point)
 template <typename T>
-void Polygon<T>::moveToPoint(Point<T, dim>& point) {
+void Polygon<T>::moveToPoint(Point<T, dim> point) {
     Point<T, dim> delta = point - centroid_;
     centroid_ = point;
     for (auto &vertex: vertices_)
         vertex += delta;
 
+    createEdges();
 }
 
 
