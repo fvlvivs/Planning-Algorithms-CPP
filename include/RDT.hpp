@@ -57,7 +57,7 @@ public:
     void getObstacles(std::vector<ObstacleT>& obstacles) {obstacles = obstacles_;}
     void setSystem(SystemT system) {system_ = system;}
     void optimizePath();
-
+    T getSolutionCost() {return goal_->cost;}
 
 private:
     void sampleRandomPoint(NodeT*& point);
@@ -65,7 +65,10 @@ private:
     void rewiring(NodeT*& point);
     bool doesPointLieInFreeSpace(NodeT*& point);
     bool doesPathLieInFreeSpace(NodeT*& point, NodeT*& new_point);
-    bool isSystemInCollision(NodeT*& point);
+    void sampleRandomPointWithinBias(NodeT*& point);
+    void createBiasedDistribution(NodeT*& point);
+    void optimizePathWithTriangleInequality();
+    void optimizePathWithBiasedSampling();
 
     NodeT* start_;
     NodeT* goal_;
@@ -73,12 +76,16 @@ private:
 
     Metric metric_ {euclideanMetric};
     PointDistributionT point_distribution_;
+    PointDistributionT biased_point_distribution_;
 
     size_t max_iter_ {1000};
+    size_t biased_iter_ {50};
+    size_t optimization_iter_ {5};
     T goal_range_radius_ {0.5};
     T neighbour_radius_ {0.3};
     T rewiring_radius_ {0.5};
     T path_check_resolution_ {0.01};
+    T bias_sampling_radius_ {0.9};
     std::vector<NodeT*> nodes_;
     std::vector<ObstacleT> obstacles_;
 };
@@ -186,17 +193,6 @@ bool RDT<T, dim>::doesPathLieInFreeSpace(NodeT*& point, NodeT*& new_point) {
     return true;
 }
 
-// bool isSystemInCollision(NodeT*& point)
-template<typename T, size_t dim>
-bool RDT<T, dim>::isSystemInCollision(NodeT*& point) {
-    system_.moveToPoint(*point);
-    for (auto &obstacle: obstacles_) {
-        if (arePolygonsColliding(system_, obstacle))
-            return true;
-    }
-    return false;
-}
-
 // bool run()
 template <typename T, size_t dim>
 bool RDT<T, dim>::run() {
@@ -236,12 +232,14 @@ bool RDT<T, dim>::run() {
     return false;
 }
 
-// void optimizePath()
+// void optimizePathWithTriangleInequality()
 template<typename T, size_t dim>
-void RDT<T, dim>::optimizePath() {
+void RDT<T, dim>::optimizePathWithTriangleInequality() {
     NodeT* node = goal_;
     NodeT* n1 = new NodeT;
     NodeT* n2 = new NodeT;
+    std::vector<NodeT*> path;
+    path.push_back(node);
     while (node != nullptr) {
         n1 = node->parent;
         if (n1 == nullptr)
@@ -251,11 +249,96 @@ void RDT<T, dim>::optimizePath() {
             break;
 
         if (doesPathLieInFreeSpace(node, n2)) {
+
+            if (n2->parent != nullptr && !doesPathLieInFreeSpace(n2->parent, n2)) {
+                    node = n1;
+                    continue;
+            }
+
             node->parent = node->parent->parent;
             node->cost = n2->cost + metric_(node, n2);
             continue;
         }
         node = n1;
+
+        path.push_back(node);
+    }
+    path.push_back(start_);
+
+    // reverse path
+    std::reverse(path.begin(), path.end());
+    // recomputing cost
+    for (size_t i=1; i<path.size(); i++) {
+        path[i]->cost = path[i-1]->cost + metric_(path[i], path[i-1]);
+    }
+
+}
+
+// void createBiasedDistribution(NodeT*& point)
+template <typename T, size_t dim>
+void RDT<T, dim>::createBiasedDistribution(NodeT*& point) {
+    std::vector<std::pair<T, T>> intervals;
+    intervals.reserve(dim);
+    for (int i=0; i<dim; i++) {
+        intervals.emplace_back(
+                point->operator[](i) - bias_sampling_radius_,
+                point->operator[](i) + bias_sampling_radius_
+                );
+    }
+    biased_point_distribution_ = PointDistributionT(intervals);
+}
+
+// void sampleRandomPointWithinBias(NodeT*& point)
+template<typename T, size_t dim>
+void RDT<T, dim>::sampleRandomPointWithinBias(NodeT*& point) {
+    biased_point_distribution_.sample(*point);
+}
+
+// void optimizePathWithBiasedSampling()
+template<typename T, size_t dim>
+void RDT<T, dim>::optimizePathWithBiasedSampling() {
+    NodeT* node = goal_;
+    while (node != nullptr) {
+        NodeT* n1 = node->parent;
+        if (n1 == nullptr)
+            break;
+        // ensure the start node is not modified
+        if (n1->parent == nullptr)
+            break;
+
+        T min_cost = metric_(n1->parent, n1) + metric_(n1, node);
+        createBiasedDistribution(n1);
+        // printf("Biased Iter: %zu\n", biased_iter_);
+
+        for (size_t i=0; i<biased_iter_; i++) {
+            NodeT* n2 = new NodeT;
+            sampleRandomPointWithinBias(n2);
+            T cost = metric_(n1->parent, n2) + metric_(n2, node);
+            if (cost < min_cost) {
+                if ((doesPointLieInFreeSpace(n2) && doesPathLieInFreeSpace(n2, node) && doesPathLieInFreeSpace(n2, n1->parent))) {
+                    min_cost = cost;
+                    n2->parent = n1->parent;
+                    n2->cost = cost;
+                    node->cost = metric_(n2, node) + n2->cost;
+                    node->parent = n2;
+                }
+            }
+        }
+        node = n1;
+    }
+}
+
+// void optimizePath()
+template<typename T, size_t dim>
+void RDT<T, dim>::optimizePath() {
+    for (size_t i=0; i<optimization_iter_; i++) {
+        T cost = getSolutionCost();
+        optimizePathWithTriangleInequality();
+        optimizePathWithBiasedSampling();
+        T new_cost = getSolutionCost();
+        if (fabs(new_cost - cost) < 1e-6) {
+            break;
+        }
     }
 }
 
