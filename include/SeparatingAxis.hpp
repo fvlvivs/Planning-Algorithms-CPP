@@ -35,7 +35,7 @@
 // arePolygonsColliding(Polygon<T> &polygon_a, Polygon<T> &polygon_b)
 template<typename T>
 bool arePolygonsColliding(Polygon<T> &polygon_a, Polygon<T> &polygon_b) {
-    std::vector<Edge<T>> edges;
+    std::vector<Edge<T, 2>> edges;
     // check with respect to first polygon
     polygon_a.getEdges(edges);
     for (auto& edge: edges) {

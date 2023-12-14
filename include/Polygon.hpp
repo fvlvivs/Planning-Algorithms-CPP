@@ -39,7 +39,7 @@ public:
     explicit Polygon(std::vector<Point<T, dim>> vertices);
 
     bool isPointIncluded(Point<T, dim>& point);
-    void getEdges(std::vector<Edge<T>>& edges) {edges = edges_;}
+    void getEdges(std::vector<Edge<T, dim>>& edges) {edges = edges_;}
     void getVertices(std::vector<Point<T, dim>>& vertices) {vertices = vertices_;}
     void moveToPoint(Point<T, dim> point);
 
@@ -48,7 +48,7 @@ private:
     void createEdges();
 
     std::vector<Point<T, dim>> vertices_;
-    std::vector<Edge<T>> edges_;
+    std::vector<Edge<T, dim>> edges_;
     Point<T, dim> centroid_;
 };
 
@@ -96,12 +96,12 @@ void Polygon<T>::createEdges() {
     edges_.clear();
     size_t n = vertices_.size();
     for (size_t i=0; i<n-1; i++) {
-        Edge<T> edge{};
+        Edge<T, dim> edge{};
         edge.a = vertices_[i];
         edge.b = vertices_[i+1];
         edges_.push_back(edge);
     }
-    Edge<T> edge{};
+    Edge<T, dim> edge{};
     edge.a = vertices_.back();
     edge.b = vertices_.front();
     edges_.push_back(edge);

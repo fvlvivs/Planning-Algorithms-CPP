@@ -45,13 +45,13 @@ struct Point : public Eigen::Vector<T, dim> {
 };
 
 // Edge
-template <typename T>
+template <typename T, size_t dim>
 struct Edge {
-    Point<T, 2> a;
-    Point<T, 2> b;
+    Point<T, dim> a;
+    Point<T, dim> b;
 
     Edge() = default;
-    Edge(Point<T, 2> a, Point<T, 2> b) : a(a), b(b) {}
+    Edge(Point<T, dim> a, Point<T, dim> b) : a(a), b(b) {}
 };
 
 // Node
@@ -109,8 +109,8 @@ typedef Point<float, 2> Point2f;
 typedef Point<double, 2> Point2d;
 typedef Node<float, 2> Node2f;
 typedef Node<double, 2> Node2d;
-typedef Edge<Node<double, 2>> Edge2f;
-typedef Edge<Node<double, 2>> Edge2d;
+typedef Edge<double, 2> Edge2f;
+typedef Edge<double, 2> Edge2d;
 typedef PointDistribution<float, 2> PointDistribution2f;
 typedef PointDistribution<double, 2> PointDistribution2d;
 
