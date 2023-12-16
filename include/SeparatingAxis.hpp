@@ -30,18 +30,18 @@
 #include "Geometry.hpp"
 #include "Polygon.hpp"
 
-// Using Separating Axis Theorem to check if two polygons are colliding
+// Using Separating Axis Theorem to check if two polygons/polyhedra are colliding
 
 // arePolygonsColliding(Polygon<T> &polygon_a, Polygon<T> &polygon_b)
 template<typename T>
-bool arePolygonsColliding(Polygon<T> &polygon_a, Polygon<T> &polygon_b) {
+bool arePolygonsColliding(Polygon<T, 2> &polygon_a, Polygon<T, 2> &polygon_b) {
     std::vector<Edge<T, 2>> edges;
     // check with respect to first polygon
     polygon_a.getEdges(edges);
     for (auto& edge: edges) {
-        Point<T, 2> diff = edge.b - edge.a;
+        Point<T, 2> diff = -(edge.b - edge.a);
         Point<T, 2> normal(diff.y(), -diff.x());
-        if (!doesPolygonCrossAxis(edge.a, normal, polygon_b))
+        if (computeProjectionSides(edge.a, normal, polygon_b) > 0)
             return false;
     }
 
@@ -49,35 +49,109 @@ bool arePolygonsColliding(Polygon<T> &polygon_a, Polygon<T> &polygon_b) {
     edges.clear();
     polygon_b.getEdges(edges);
     for (auto& edge: edges) {
-        Point<T, 2> diff = edge.b - edge.a;
+        Point<T, 2> diff = -(edge.b - edge.a);
         Point<T, 2> normal(diff.y(), -diff.x());
-        if (!doesPolygonCrossAxis(edge.a, normal, polygon_a))
+        if (computeProjectionSides(edge.a, normal, polygon_a) > 0)
             return false;
     }
     return true;
 }
 
-// doesPolygonCrossAxis(Point<T, 2> &point, Point<T, 2> &axis, Polygon<T> &polygon)
-template<typename T>
-bool doesPolygonCrossAxis(Point<T, 2> &point, Point<T, 2> &axis, Polygon<T> &polygon) {
-    std::vector<Point<T, 2>> vertices;
+template <typename T, size_t dim>
+int computeProjectionSides(Point<T, dim> &point, Point<T, dim> &axis, Polygon<T, dim> &polygon) {
+    std::vector<Point<T, dim>> vertices;
     polygon.getVertices(vertices);
-    bool positive = false;
-    bool negative = false;
-    size_t positive_count = 0;
+    int positive_count = 0;
+    int negative_count = 0;
     for (auto& vertex: vertices) {
         T dot_product = axis.dot(vertex - point);
         if (dot_product > 0) {
-            positive = true;
             positive_count++;
         } else if (dot_product < 0) {
-            negative = true;
+            negative_count++;
         }
 
-        if (positive && negative)
-            return true;
+        if (positive_count > 0 && negative_count > 0)
+            return 0;
     }
-    return positive_count > 0;
+
+    return (positive_count > 0 ? 1 : -1);
+}
+
+template <typename T>
+bool arePolyhedraColliding(Polyhedra<T> &polyhedra_a, Polyhedra<T> &polyhedra_b) {
+    std::vector<Polygon<T, 3>> faces_a;
+    std::vector<Polygon<T, 3>> faces_b;
+    polyhedra_a.getFaces(faces_a);
+    polyhedra_b.getFaces(faces_b);
+
+    Point<T, 3> reference_point;
+    // check with respect to first polyhedra
+    polyhedra_a.getCentroid(reference_point);
+    for (auto& face_a: faces_a) {
+        Point<T, 3> normal;
+        face_a.getNormalWithRespectToPoint(reference_point, normal);
+        Point<T, 3> first_vertex;
+        face_a.getFirstVertex(first_vertex);
+
+        bool condition = false;
+        for (auto& face_b: faces_b)
+            condition = condition && (computeProjectionSides(first_vertex, normal, face_b) > 0);
+
+        if (condition)
+            return false;
+    }
+
+    polyhedra_b.getCentroid(reference_point);
+    for (auto& face_b: faces_b) {
+        Point<T, 3> normal;
+        face_b.getNormalWithRespectToPoint(reference_point, normal);
+        Point<T, 3> first_vertex;
+        face_b.getFirstVertex(first_vertex);
+
+        bool condition = false;
+        for (auto& face_a: faces_a)
+            condition = condition && (computeProjectionSides(first_vertex, normal, face_a) > 0);
+
+        if (condition)
+            return false;
+    }
+
+    for (auto& face_a: faces_a) {
+        std::vector<Edge<T, 3>> edges_a;
+        face_a.getEdges(edges_a);
+        for (auto &edge_a: edges_a) {
+            Point<T, 3> diff_a = edge_a.b - edge_a.a;
+            Point<T, 3> p_a = edge_a.a;
+
+            for (auto& face_b: faces_b) {
+                std::vector<Edge<T, 3>> edges_b;
+                face_b.getEdges(edges_b);
+                for (auto &edge_b: edges_b) {
+                    Point<T, 3> diff_b = edge_b.b - edge_b.a;
+                    Point<T, 3> cross = diff_a.cross(diff_b);
+
+                    if (cross.norm() > 1e-6) {
+                        int side_a = 0;
+                        for (auto& el_a: faces_a)
+                            side_a += computeProjectionSides(p_a, cross, el_a);
+                        if (side_a == 0)
+                            continue;
+
+                        int side_b = 0;
+                        for (auto& el_b: faces_b)
+                            side_b += computeProjectionSides(p_a, cross, el_b);
+                        if (side_b == 0)
+                            continue;
+
+                        if (side_a * side_b < 0)
+                            return false;
+                    }
+                }
+            }
+        }
+    }
+    return true;
 }
 
 
