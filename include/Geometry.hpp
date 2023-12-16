@@ -114,4 +114,14 @@ typedef Edge<double, 2> Edge2d;
 typedef PointDistribution<float, 2> PointDistribution2f;
 typedef PointDistribution<double, 2> PointDistribution2d;
 
+// 3D
+typedef Point<float, 3> Point3f;
+typedef Point<double, 3> Point3d;
+typedef Node<float, 3> Node3f;
+typedef Node<double, 3> Node3d;
+typedef Edge<double, 3> Edge3f;
+typedef Edge<double, 3> Edge3d;
+typedef PointDistribution<float, 3> PointDistribution3f;
+typedef PointDistribution<double, 3> PointDistribution3d;
+
 #endif //GEOMETRY_HPP
