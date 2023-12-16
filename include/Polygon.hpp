@@ -45,6 +45,7 @@ public:
     void moveToPoint(Point<T, dim> point);
     void shiftByDelta(Point<T, dim> delta);
     void getNormal(Point<T, dim>& normal);
+    void getNormalWithRespectToPoint(Point<T, dim>& point, Point<T, dim>& normal);
 
     void orderVertices();  // 2D
     void orderVertices(Point<T, dim> reference);  // 3D
@@ -132,6 +133,15 @@ void Polygon<T, dim>::getNormal(Point<T, dim>& normal) {
         throw std::runtime_error("Polygon::getNormal() is not defined for 2D polygons");
 
     getPlaneNormal(vertices_[0], vertices_[1], vertices_[2], normal);
+}
+
+// void getNormalWithRespectToPoint(Point<T, dim>& point, Point<T, dim>& normal)
+template <typename T, size_t dim>
+void Polygon<T, dim>::getNormalWithRespectToPoint(Point<T, dim>& point, Point<T, dim>& normal) {
+    getNormal(normal);
+    T dot = normal.dot(point - vertices_[0]);
+    if (dot > 0)
+        normal = -normal;
 }
 
 // void orderVertices() [2D]
