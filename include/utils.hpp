@@ -36,4 +36,9 @@ U euclideanMetric(T* a, T* b) {
     return (*b - *a).norm();
 }
 
+template <typename T, typename U = typename T::value_type>
+void getPlaneNormal(T& a, T& b, T& c, T& n) {
+    n = (b - a).cross(c - a);
+}
+
 #endif //UTILS_HPP
