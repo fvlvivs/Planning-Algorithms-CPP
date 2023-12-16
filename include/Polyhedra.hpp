@@ -33,11 +33,13 @@ template <typename T>
 class Polyhedra {
     static constexpr size_t dim = 3;
 
+
 public:
     Polyhedra() = default;
     ~Polyhedra() = default;
     explicit Polyhedra(std::vector<Polygon<T, dim>> faces);
     void getFaces(std::vector<Polygon<T, dim>>& faces) {faces = faces_;}
+    bool isPointIncluded(Point<T, dim>& point);
 
     void getCentroid(Point<T, dim>& centroid) {centroid = centroid_;}
     void moveToPoint(Point<T, dim> point);
@@ -79,5 +81,19 @@ void Polyhedra<T>::moveToPoint(Point<T, dim> point) {
     for (auto& face: faces_)
         face.shiftByDelta(delta);
 }
+
+template <typename T>
+bool Polyhedra<T>::isPointIncluded(Point<T, dim> &point) {
+    bool condition = true;
+    Point<T, dim> normal_to_centroid;
+    Point<T, dim> normal_to_point;
+    for (auto& face: faces_) {
+        face.getNormalWithRespectToPoint(centroid_, normal_to_centroid);
+        face.getNormalWithRespectToPoint(point, normal_to_point);
+        condition = condition && (normal_to_centroid.dot(normal_to_point) > 0);
+    }
+    return condition;
+}
+
 
 #endif //XI_PLANNING_ALGORITHMS_POLYHEDRA_HPP
