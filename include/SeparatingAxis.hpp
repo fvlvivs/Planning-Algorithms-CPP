@@ -34,7 +34,7 @@
 
 // arePolygonsColliding(Polygon<T> &polygon_a, Polygon<T> &polygon_b)
 template<typename T>
-bool arePolygonsColliding(Polygon<T, 2> &polygon_a, Polygon<T, 2> &polygon_b) {
+bool areObjectsColliding(Polygon<T, 2> &polygon_a, Polygon<T, 2> &polygon_b) {
     std::vector<Edge<T, 2>> edges;
     // check with respect to first polygon
     polygon_a.getEdges(edges);
@@ -79,7 +79,7 @@ int computeProjectionSides(Point<T, dim> &point, Point<T, dim> &axis, Polygon<T,
 }
 
 template <typename T>
-bool arePolyhedraColliding(Polyhedra<T> &polyhedra_a, Polyhedra<T> &polyhedra_b) {
+bool areObjectsColliding(Polyhedra<T> &polyhedra_a, Polyhedra<T> &polyhedra_b) {
     std::vector<Polygon<T, 3>> faces_a;
     std::vector<Polygon<T, 3>> faces_b;
     polyhedra_a.getFaces(faces_a);
