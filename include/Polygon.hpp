@@ -29,10 +29,9 @@
 #include "Geometry.hpp"
 #include "utils.hpp"
 
-template <typename T>
-class Polygon {
 
-    static constexpr size_t dim = 2;
+template <typename T, size_t dim>
+class Polygon {
 
 public:
     Polygon() = default;
@@ -41,10 +40,16 @@ public:
     bool isPointIncluded(Point<T, dim>& point);
     void getEdges(std::vector<Edge<T, dim>>& edges) {edges = edges_;}
     void getVertices(std::vector<Point<T, dim>>& vertices) {vertices = vertices_;}
+    void getCentroid(Point<T, dim>& centroid) {centroid = centroid_;}
+    void getFirstVertex(Point<T, dim>& vertex) {vertex = vertices_[0];}
     void moveToPoint(Point<T, dim> point);
+    void shiftByDelta(Point<T, dim> delta);
+    void getNormal(Point<T, dim>& normal);
+
+    void orderVertices();  // 2D
+    void orderVertices(Point<T, dim> reference);  // 3D
 
 private:
-    void orderVertices();
     void createEdges();
 
     std::vector<Point<T, dim>> vertices_;
@@ -54,45 +59,16 @@ private:
 
 
 // Polygon(std::vector<Point<T, dim>> vertices)
-template <typename T>
-Polygon<T>::Polygon(std::vector<Point<T, dim>> vertices) {
+template <typename T, size_t dim>
+Polygon<T, dim>::Polygon(std::vector<Point<T, dim>> vertices) {
     vertices_ = vertices;
     orderVertices();
     createEdges();
 }
 
-// void orderVertices() [counter-clockwise]
-template <typename T>
-void Polygon<T>::orderVertices() {
-    size_t n = vertices_.size();
-    centroid_ = Point<T, dim>::Zero();
-    for (auto &vertex: vertices_) {
-        centroid_ += vertex;
-    }
-    centroid_ /= n;
-
-    std::vector<std::pair<size_t, T>> angles;
-    angles.reserve(n);
-    for (size_t i=0; i<n; i++) {
-        angles.emplace_back(
-            i, atan2(vertices_[i].y() - centroid_.y(), vertices_[i].x() - centroid_.x())
-            );
-    }
-
-    std::sort(angles.begin(), angles.end(), [](auto &left, auto &right) {
-        return left.second > right.second;
-    });
-
-    std::vector<Point<T, dim>> ordered_vertices;
-    for (size_t i=0; i<n; i++) {
-        ordered_vertices.push_back(vertices_[angles[i].first]);
-    }
-    vertices_ = ordered_vertices;
-}
-
 // void createEdges()
-template <typename T>
-void Polygon<T>::createEdges() {
+template <typename T, size_t dim>
+void Polygon<T, dim>::createEdges() {
     edges_.clear();
     size_t n = vertices_.size();
     for (size_t i=0; i<n-1; i++) {
@@ -108,8 +84,8 @@ void Polygon<T>::createEdges() {
 }
 
 // bool isPointIncluded(Point<T, dim>& point)
-template <typename T>
-bool Polygon<T>::isPointIncluded(Point<T, dim>& point) {
+template <typename T, size_t dim>
+bool Polygon<T, dim>::isPointIncluded(Point<T, dim>& point) {
     size_t low = 0;
     size_t N = vertices_.size();
     size_t high = N;
@@ -129,8 +105,8 @@ bool Polygon<T>::isPointIncluded(Point<T, dim>& point) {
 }
 
 // void moveToPoint(Point<T, dim>& point)
-template <typename T>
-void Polygon<T>::moveToPoint(Point<T, dim> point) {
+template <typename T, size_t dim>
+void Polygon<T, dim>::moveToPoint(Point<T, dim> point) {
     Point<T, dim> delta = point - centroid_;
     centroid_ = point;
     for (auto &vertex: vertices_)
@@ -139,5 +115,105 @@ void Polygon<T>::moveToPoint(Point<T, dim> point) {
     createEdges();
 }
 
+// void shiftByDelta(Point<T, dim>& delta)
+template <typename T, size_t dim>
+void Polygon<T, dim>::shiftByDelta(Point<T, dim> delta) {
+    centroid_ += delta;
+    for (auto &vertex: vertices_)
+        vertex += delta;
+
+    createEdges();
+}
+
+// void getNormal(Point<T, dim>& normal)
+template <typename T, size_t dim>
+void Polygon<T, dim>::getNormal(Point<T, dim>& normal) {
+    if (dim == 2)
+        throw std::runtime_error("Polygon::getNormal() is not defined for 2D polygons");
+
+    getPlaneNormal(vertices_[0], vertices_[1], vertices_[2], normal);
+}
+
+// void orderVertices() [2D]
+template <typename T, size_t dim>
+void Polygon<T, dim>::orderVertices() {
+    size_t n = vertices_.size();
+    centroid_ = Point<T, dim>::Zero();
+    for (auto &vertex: vertices_) {
+        centroid_ += vertex;
+    }
+    centroid_ /= n;
+
+    std::vector<std::pair<size_t, T>> angles;
+    angles.reserve(n);
+    for (size_t i = 0; i < n; i++) {
+        angles.emplace_back(
+                i, atan2(vertices_[i].y() - centroid_.y(), vertices_[i].x() - centroid_.x())
+        );
+    }
+
+    std::sort(angles.begin(), angles.end(), [](auto &left, auto &right) {
+        return left.second > right.second;
+    });
+
+    std::vector<Point<T, dim>> ordered_vertices;
+    for (size_t i = 0; i < n; i++) {
+        ordered_vertices.push_back(vertices_[angles[i].first]);
+    }
+    vertices_ = ordered_vertices;
+}
+
+
+// void orderVertices() [3D]
+template <typename T, size_t dim>
+void Polygon<T, dim>::orderVertices(Point<T, dim> reference) {
+
+    Point<T, dim> normal;
+    getPlaneNormal(vertices_[0], vertices_[1], vertices_[2], normal);
+    T dot = normal.dot(reference - vertices_[0]);
+    // make them point in the same direction
+    if (dot > 0)
+        normal = -normal;
+
+    // find the quaternion that rotates normal to z_axis
+    Point<T, dim> z_axis{0, 0, 1};
+    Eigen::Quaternion<T> q;
+    q.setFromTwoVectors(normal, z_axis);
+
+    // rotate all vertices
+    for (auto& vertex: vertices_)
+        vertex = q * vertex;
+
+    // now that are all in the same plane, order them counter-clockwise
+    // find the centroid (tmp rotated)
+    Point<T, dim> centroid = Point<T, dim>::Zero();
+    for (auto vertex: vertices_)
+        centroid += vertex;
+    centroid /= vertices_.size();
+
+    std::vector<std::pair<size_t, T>> angles;
+    angles.reserve(vertices_.size());
+    for (size_t i=0; i<vertices_.size(); i++) {
+        angles.emplace_back(
+                i, atan2(vertices_[i].y() - centroid.y(), vertices_[i].x() - centroid.x())
+                );
+    }
+
+    std::sort(angles.begin(), angles.end(), [](auto& a, auto& b) {
+        return a.second > b.second;
+    });
+
+    std::vector<Point<T, dim>> vertices_ordered;
+    for (size_t i=0; i<vertices_.size(); i++) {
+        vertices_ordered.push_back(q.conjugate() * vertices_[angles[i].first]);
+    }
+    vertices_ = vertices_ordered;
+
+    // compute centroid
+    centroid_ = Point<T, dim>::Zero();
+    for (auto vertex: vertices_)
+        centroid_ += vertex;
+    centroid_ /= vertices_.size();
+}
 
 #endif //POLYGON_HPP
