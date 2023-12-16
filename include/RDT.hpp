@@ -28,6 +28,7 @@
 #define XI_PLANNING_ALGORITHMS_RDT_HPP
 
 #include <vector>
+#include <type_traits>
 
 #include "utils.hpp"
 #include "Geometry.hpp"
@@ -39,8 +40,19 @@ class RDT {
     typedef Point<T, dim> PointT;
     typedef Node<T, dim> NodeT;
     typedef PointDistribution<T, dim> PointDistributionT;
-    typedef Polygon<T> ObstacleT;
-    typedef Polygon<T> SystemT;
+    typedef typename std::conditional<
+            dim == 2,
+            Polygon<T, dim>,
+            Polyhedra<T>
+    >::type ObstacleT;
+    typedef typename std::conditional<
+            dim == 2,
+            Polygon<T, dim>,
+            Polyhedra<T>
+    >::type SystemT;
+
+
+
     using Metric = T(*)(NodeT*, NodeT*);
 
 public:
@@ -81,8 +93,8 @@ private:
     size_t max_iter_ {1000};
     size_t biased_iter_ {50};
     size_t optimization_iter_ {5};
-    T goal_range_radius_ {0.5};
-    T neighbour_radius_ {0.3};
+    T goal_range_radius_ {0.8};
+    T neighbour_radius_ {0.8};
     T rewiring_radius_ {0.5};
     T path_check_resolution_ {0.01};
     T bias_sampling_radius_ {0.9};
@@ -172,7 +184,7 @@ bool RDT<T, dim>::doesPointLieInFreeSpace(NodeT*& point) {
             return false;
 
         system_.moveToPoint(*point);
-        if (arePolygonsColliding(system_, obstacle))
+        if (areObjectsColliding(system_, obstacle))
             return false;
     }
     return true;
