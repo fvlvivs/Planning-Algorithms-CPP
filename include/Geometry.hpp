@@ -42,6 +42,7 @@ struct Point : public Eigen::Vector<T, dim> {
 
     T& x() {return this->coeffRef(0);}
     T& y() {return this->coeffRef(1);}
+    T& z() {return this->coeffRef(2);}
 };
 
 // Edge
@@ -63,6 +64,12 @@ struct Node : public Point<T, dim> {
     T cost_to_come;
     T cost_to_go;
     Node<T, dim> *parent {nullptr};
+    T eps {1e-6};
+
+    bool operator == (const Node<T, dim>* rhs) const {
+        return (*this - *rhs).norm() < eps;
+    }
+
 };
 
 // PointDistribution
