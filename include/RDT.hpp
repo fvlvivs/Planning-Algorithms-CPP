@@ -50,37 +50,56 @@ class RDT {
             Polygon<T, dim>,
             Polyhedra<T>
     >::type SystemT;
-
-
-
     using Metric = T(*)(NodeT*, NodeT*);
 
 public:
     RDT() = default;
     ~RDT() = default;
     explicit RDT(NodeT* start, NodeT* goal);
-    void setDistribution(PointDistributionT point_distribution) {point_distribution_ = point_distribution;}
-    bool findNearestNeighbor(NodeT*& point, NodeT*& neighbor);
-    bool isGoalWithinRange(NodeT*& point) {return metric_(point, goal_) < goal_range_radius_;}
     bool run();
-    void getNodes(std::vector<NodeT*>& nodes) {nodes = nodes_;}
-    void getGoal(NodeT*& goal) {goal = goal_;}
+
     void addObstacle(ObstacleT obstacle) {obstacles_.push_back(obstacle);}
-    void getObstacles(std::vector<ObstacleT>& obstacles) {obstacles = obstacles_;}
+    void setBiasedIterations(size_t biased_iter) {biased_iter_ = biased_iter;}
+    void setBiasSamplingRadius(T bias_sampling_radius) {bias_sampling_radius_ = bias_sampling_radius;}
+    void setDistribution(PointDistributionT point_distribution) {point_distribution_ = point_distribution;}
+    void setGoalRangeRadius(T goal_range_radius) {goal_range_radius_ = goal_range_radius;}
+    void setMaximumIterations(size_t max_iter) {max_iter_ = max_iter;}
+    void setMetric(Metric metric) {metric_ = metric;}
+    void setNeighbourRadius(T neighbour_radius) {neighbour_radius_ = neighbour_radius;}
+    void setOptimizationIterations(size_t optimization_iter) {optimization_iter_ = optimization_iter;}
+    void setPathCheckResolution(T path_check_resolution) {path_check_resolution_ = path_check_resolution;}
+    void setRewiringRadius(T rewiring_radius) {rewiring_radius_ = rewiring_radius;}
     void setSystem(SystemT system) {system_ = system;}
-    void optimizePath();
+
+    void getBiasedIterations(size_t& biased_iter) {biased_iter = biased_iter_;}
+    void getBiasSamplingRadius(T& bias_sampling_radius) {bias_sampling_radius = bias_sampling_radius_;}
+    void getGoal(NodeT*& goal) {goal = goal_;}
+    void getGoalRangeRadius(T& goal_range_radius) {goal_range_radius = goal_range_radius_;}
+    void getMetric(Metric& metric) {metric = metric_;}
+    void getMaximumIterations(size_t& max_iter) {max_iter = max_iter_;}
+    void getNeighbourRadius(T& neighbour_radius) {neighbour_radius = neighbour_radius_;}
+    void getNodes(std::vector<NodeT*>& nodes) {nodes = nodes_;}
+    void getObstacles(std::vector<ObstacleT>& obstacles) {obstacles = obstacles_;}
+    void getOptimizationIterations(size_t& optimization_iter) {optimization_iter = optimization_iter_;}
+    void getRewiringRadius(T& rewiring_radius) {rewiring_radius = rewiring_radius_;}
+    void getPathCheckResolution(T& path_check_resolution) {path_check_resolution = path_check_resolution_;}
     T getSolutionCost() {return goal_->cost;}
+    void getStart(NodeT*& start) {start = start_;}
+
 
 private:
-    void sampleRandomPoint(NodeT*& point);
+    void createBiasedDistribution(NodeT*& point);
+    bool doesPathLieInFreeSpace(NodeT*& point, NodeT*& new_point);
+    bool doesPointLieInFreeSpace(NodeT*& point);
+    bool findNearestNeighbor(NodeT*& point, NodeT*& neighbor);
+    bool isGoalWithinRange(NodeT*& point) {return metric_(point, goal_) < goal_range_radius_;}
+    void optimizePath();
+    void optimizePathWithBiasedSampling();
+    void optimizePathWithTriangleInequality();
     void projectRandomPointTowardsNearest(NodeT*& point, NodeT*& nearest_point) const;
     void rewiring(NodeT*& point);
-    bool doesPointLieInFreeSpace(NodeT*& point);
-    bool doesPathLieInFreeSpace(NodeT*& point, NodeT*& new_point);
+    void sampleRandomPoint(NodeT*& point);
     void sampleRandomPointWithinBias(NodeT*& point);
-    void createBiasedDistribution(NodeT*& point);
-    void optimizePathWithTriangleInequality();
-    void optimizePathWithBiasedSampling();
 
     NodeT* start_;
     NodeT* goal_;
