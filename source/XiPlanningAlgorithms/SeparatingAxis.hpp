@@ -29,6 +29,7 @@
 
 #include "Geometry.hpp"
 #include "Polygon.hpp"
+#include "Polyhedra.hpp"
 
 // Using Separating Axis Theorem to check if two polygons/polyhedra are colliding
 

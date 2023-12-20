@@ -1,1 +1,1 @@
-# xi-planning-algorithms
+# &xi;-planning-algorithms
