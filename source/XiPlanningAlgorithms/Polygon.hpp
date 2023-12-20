@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 
-#ifndef POLYGON_HPP
-#define POLYGON_HPP
+#ifndef XI_PLANNING_ALGORITHMS_POLYGON_HPP
+#define XI_PLANNING_ALGORITHMS_POLYGON_HPP
 
 #include <vector>
 
@@ -226,4 +226,4 @@ void Polygon<T, dim>::orderVertices(Point<T, dim> reference) {
     centroid_ /= vertices_.size();
 }
 
-#endif //POLYGON_HPP
+#endif //XI_PLANNING_ALGORITHMS_POLYGON_HPP

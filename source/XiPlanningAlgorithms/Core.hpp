@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 
-#ifndef GEOMETRY_HPP
-#define GEOMETRY_HPP
+#ifndef XI_PLANNING_ALGORITHMS_CORE_HPP
+#define XI_PLANNING_ALGORITHMS_CORE_HPP
 
 #include <random>
 #include <cassert>
@@ -131,4 +131,4 @@ typedef Edge<double, 3> Edge3d;
 typedef PointDistribution<float, 3> PointDistribution3f;
 typedef PointDistribution<double, 3> PointDistribution3d;
 
-#endif //GEOMETRY_HPP
+#endif //XI_PLANNING_ALGORITHMS_CORE_HPP
