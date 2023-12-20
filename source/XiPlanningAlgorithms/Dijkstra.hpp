@@ -24,7 +24,7 @@
 #ifndef XI_PLANNING_ALGORITHMS_DIJKSTRA_HPP
 #define XI_PLANNING_ALGORITHMS_DIJKSTRA_HPP
 
-#include "Geometry.hpp"
+#include "Core.hpp"
 #include "DiscreteSearch.hpp"
 
 template <typename T, size_t dim>

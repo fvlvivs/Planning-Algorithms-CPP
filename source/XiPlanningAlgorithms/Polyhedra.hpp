@@ -24,7 +24,7 @@
 #ifndef XI_PLANNING_ALGORITHMS_POLYHEDRA_HPP
 #define XI_PLANNING_ALGORITHMS_POLYHEDRA_HPP
 
-#include "Geometry.hpp"
+#include "Core.hpp"
 #include "Polygon.hpp"
 #include "utils.hpp"
 

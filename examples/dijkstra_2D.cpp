@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 #include <cstdio>
-#include <XiPlanningAlgorithms/Geometry.hpp>
+#include <XiPlanningAlgorithms/Core.hpp>
 #include <XiPlanningAlgorithms/Polygon.hpp>
 #include <XiPlanningAlgorithms/Dijkstra.hpp>
 

@@ -27,7 +27,7 @@
 #ifndef XI_PLANNING_ALGORITHMS_SEPARATINGAXIS_HPP
 #define XI_PLANNING_ALGORITHMS_SEPARATINGAXIS_HPP
 
-#include "Geometry.hpp"
+#include "Core.hpp"
 #include "Polygon.hpp"
 #include "Polyhedra.hpp"
 

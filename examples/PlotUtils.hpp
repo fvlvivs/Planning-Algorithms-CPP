@@ -24,7 +24,7 @@
 #ifndef XI_PLANNING_ALGORITHMS_PLOTUTILS_HPP
 #define XI_PLANNING_ALGORITHMS_PLOTUTILS_HPP
 
-#include <XiPlanningAlgorithms/Geometry.hpp>
+#include <XiPlanningAlgorithms/Core.hpp>
 #include <XiPlanningAlgorithms/Polygon.hpp>
 #include <XiPlanningAlgorithms/Polyhedra.hpp>
 

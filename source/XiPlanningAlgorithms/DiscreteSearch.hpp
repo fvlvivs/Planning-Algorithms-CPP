@@ -27,7 +27,7 @@
 #include <type_traits>
 
 #include "utils.hpp"
-#include "Geometry.hpp"
+#include "Core.hpp"
 #include "SeparatingAxis.hpp"
 #include "Polyhedra.hpp"
 
