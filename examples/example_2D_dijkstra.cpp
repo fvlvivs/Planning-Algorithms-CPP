@@ -84,12 +84,13 @@ int main() {
     dijkstra.getSolution(solution);
     plotPath<double, 2>(solution, "r");
 
-
     matplot::xlim({limits[0].first, limits[0].second});
     matplot::ylim({limits[1].first, limits[1].second});
     matplot::title("2D Dijkstra");
     matplot::xlabel("x");
     matplot::ylabel("y");
     matplot::show();
+
+    return 0;
 }
 

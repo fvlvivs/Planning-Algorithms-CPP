@@ -24,22 +24,22 @@
 #include <cstdio>
 #include <XiPlanningAlgorithms/Core.hpp>
 #include <XiPlanningAlgorithms/Polyhedra.hpp>
-#include <XiPlanningAlgorithms/AStar.hpp>
+#include <XiPlanningAlgorithms/RDT.hpp>
 
 #include "PlotUtils.hpp"
 
 
 int main() {
-    printf("--- 3D A* example ---\n");
+    printf("--- 3D RDT example ---\n");
 
     Node3d* start = new Node3d({0, 0, 0});
-    Node3d* goal = new Node3d({6, 7, 3});
-    AStar<double, 3> astar(start, goal);
+    Node3d* goal = new Node3d({6, 8, 3});
+    RDT<double, 3> rdt(start, goal);
 
     // set system
     Polyhedra<double> system;
     createParallelepiped<double>(system, 0.5, 0.5, 0.5);
-    astar.setSystem(system);
+    rdt.setSystem(system);
 
     // add obstacles
     Polyhedra<double> obstacle;
@@ -50,22 +50,26 @@ int main() {
     createParallelepiped<double>(obstacle2, 0.8, 0.8, 4);
     obstacle2.moveToPoint({4, 6, 2});
 
-    astar.addObstacle(obstacle);
-    astar.addObstacle(obstacle2);
+    rdt.addObstacle(obstacle);
+    rdt.addObstacle(obstacle2);
 
-    // set space limits
+    // set distribution
     std::vector<std::pair<double, double>> limits;
     limits.emplace_back(-1, 10);
     limits.emplace_back(-1, 10);
     limits.emplace_back(-1, 5);
-    astar.setSpaceLimits(limits);
+    PointDistribution3d distribution(limits);
+    rdt.setDistribution(distribution);
 
-    // settings
-    astar.setMaximumIterations(3000);
+    rdt.setMaximumIterations(3000);
+    rdt.setNeighbourRadius(1.2);
+    rdt.setGoalRangeRadius(0.5);
+    rdt.setRewiringRadius(0.3);
+    rdt.setPathCheckResolution(0.025);
 
-    astar.run();
+    rdt.run();
+    bool success = rdt.isSolutionFound();
 
-    bool success = astar.isSolutionFound();
     if (!success) {
         printf("No solution found\n");
         return 0;
@@ -85,19 +89,22 @@ int main() {
     plotPolyhedra<double>(obstacle, "k");
     plotPolyhedra<double>(obstacle2, "k");
 
-    std::vector<Node<double, 3> *> solution;
-    astar.getSolution(solution);
-    plotPath<double, 3>(solution, "r");
+    std::vector<Node3d*> nodes;
+    rdt.getNodes(nodes);
+    plotRDTNodes(nodes, "b");
+
+    std::vector<Node3d*> solution;
+    rdt.getSolution(solution);
+    plotPath(solution, "r");
 
     matplot::xlim({limits[0].first, limits[0].second});
     matplot::ylim({limits[1].first, limits[1].second});
     matplot::zlim({limits[2].first, limits[2].second});
-    matplot::title("3D A*");
     matplot::xlabel("x");
     matplot::ylabel("y");
     matplot::zlabel("z");
+    matplot::title("3D RDT");
     matplot::show();
 
     return 0;
 }
-

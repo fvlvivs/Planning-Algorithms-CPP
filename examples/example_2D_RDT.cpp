@@ -23,49 +23,45 @@
 
 #include <cstdio>
 #include <XiPlanningAlgorithms/Core.hpp>
-#include <XiPlanningAlgorithms/Polyhedra.hpp>
-#include <XiPlanningAlgorithms/AStar.hpp>
+#include <XiPlanningAlgorithms/Polygon.hpp>
+#include <XiPlanningAlgorithms/RDT.hpp>
 
 #include "PlotUtils.hpp"
 
 
 int main() {
-    printf("--- 3D A* example ---\n");
+    printf("--- 2D RDT example ---\n");
 
-    Node3d* start = new Node3d({0, 0, 0});
-    Node3d* goal = new Node3d({6, 7, 3});
-    AStar<double, 3> astar(start, goal);
+    Node2d* start = new Node2d({0, 0});
+    Node2d* goal = new Node2d({5, 9});
+    RDT<double, 2> rdt(start, goal);
 
     // set system
-    Polyhedra<double> system;
-    createParallelepiped<double>(system, 0.5, 0.5, 0.5);
-    astar.setSystem(system);
+    Point2d p1({0, 0});
+    Point2d p2({0, 0.5});
+    Point2d p3({0.5, 0.5});
+    Point2d p4({0.5, 0});
+    Polygon<double, 2> system({p1, p2, p3, p4});
+    rdt.setSystem(system);
 
-    // add obstacles
-    Polyhedra<double> obstacle;
-    createParallelepiped<double>(obstacle, 2, 2, 0.5);
-    obstacle.moveToPoint({2, 2, 0});
+    // add obstacle
+    Point2d o1({2, 2});
+    Point2d o2({2, 6});
+    Point2d o3({4, 2});
+    Point2d o4({4, 6});
+    Polygon<double, 2> obstacle({o1, o2, o3, o4});
+    rdt.addObstacle(obstacle);
 
-    Polyhedra<double> obstacle2;
-    createParallelepiped<double>(obstacle2, 0.8, 0.8, 4);
-    obstacle2.moveToPoint({4, 6, 2});
-
-    astar.addObstacle(obstacle);
-    astar.addObstacle(obstacle2);
-
-    // set space limits
+    // set distribution
     std::vector<std::pair<double, double>> limits;
     limits.emplace_back(-1, 10);
     limits.emplace_back(-1, 10);
-    limits.emplace_back(-1, 5);
-    astar.setSpaceLimits(limits);
+    PointDistribution2d distribution(limits);
+    rdt.setDistribution(distribution);
 
-    // settings
-    astar.setMaximumIterations(3000);
+    rdt.run();
+    bool success = rdt.isSolutionFound();
 
-    astar.run();
-
-    bool success = astar.isSolutionFound();
     if (!success) {
         printf("No solution found\n");
         return 0;
@@ -77,27 +73,29 @@ int main() {
     matplot::grid(matplot::on);
 
     system.moveToPoint(*start);
-    plotPolyhedra<double>(system, "b");
+    plotPolygon<double, 2>(system, "b");
 
     system.moveToPoint(*goal);
-    plotPolyhedra<double>(system, "g");
+    plotPolygon<double, 2>(system, "g");
 
-    plotPolyhedra<double>(obstacle, "k");
-    plotPolyhedra<double>(obstacle2, "k");
+    plotPolygon<double, 2>(obstacle, "k");
 
-    std::vector<Node<double, 3> *> solution;
-    astar.getSolution(solution);
-    plotPath<double, 3>(solution, "r");
+    std::vector<Node2d*> nodes;
+    rdt.getNodes(nodes);
+    plotRDTNodes<double, 2>(nodes, "b");
 
-    matplot::xlim({limits[0].first, limits[0].second});
-    matplot::ylim({limits[1].first, limits[1].second});
-    matplot::zlim({limits[2].first, limits[2].second});
-    matplot::title("3D A*");
+    std::vector<Node2d*> solution;
+    rdt.getSolution(solution);
+    plotPath<double, 2>(solution, "r");
+
+    matplot::xlim({-1, 10});
+    matplot::ylim({-1, 10});
+    matplot::title("2D RDT");
     matplot::xlabel("x");
     matplot::ylabel("y");
-    matplot::zlabel("z");
     matplot::show();
 
     return 0;
 }
+
 

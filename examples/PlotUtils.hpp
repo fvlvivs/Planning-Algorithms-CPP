@@ -42,7 +42,8 @@ void plotPolygon(Polygon<T, 2>& poly, std::string color) {
     }
     x.push_back(vertices[0][0]);
     y.push_back(vertices[0][1]);
-    matplot::plot(x, y, color);
+    auto pl = matplot::plot(x, y);
+    pl->color(color);
 }
 
 template <typename T, size_t dim>
@@ -86,9 +87,10 @@ void plotPath(std::vector<Node<T, dim>*> path, std::string color) {
             z.push_back(node->operator[](2));
     }
 
-    if (dim == 2)
-        auto pl = matplot::plot(x, y, color);
-    else {
+    if (dim == 2) {
+        auto pl = matplot::plot(x, y);
+        pl->color(color);
+    } else {
         auto pl = matplot::plot3(x, y, z);
         pl->color(color);
     }
@@ -135,6 +137,42 @@ void createParallelepiped(Polyhedra<T> &poly, T width, T height, T depth) {
     Polyhedra<T> cube = Polyhedra<T>({face1, face2, face3, face4, face5, face6});
     poly = cube;
 }
+
+template <typename T, size_t dim>
+void plotRDTNodes(std::vector<Node<T, dim>*> nodes, std::string color) {
+    std::vector<T> x;
+    std::vector<T> y;
+    std::vector<T> z;
+
+    for (auto node: nodes) {
+        x.clear();
+        y.clear();
+        z.clear();
+
+        x.push_back(node->operator[](0));
+        y.push_back(node->operator[](1));
+        if (dim == 3)
+            z.push_back(node->operator[](2));
+
+        if (node->parent != nullptr) {
+            x.push_back(node->parent->operator[](0));
+            y.push_back(node->parent->operator[](1));
+            if (dim == 3)
+                z.push_back(node->parent->operator[](2));
+        }
+
+        if (dim == 2) {
+            auto pl = matplot::plot(x, y);
+            pl->color(color);
+
+        } else {
+            auto pl = matplot::plot3(x, y, z);
+            pl->color(color);
+        }
+    }
+
+}
+
 
 
 #endif //XI_PLANNING_ALGORITHMS_PLOTUTILS_HPP
