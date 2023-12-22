@@ -52,11 +52,22 @@ public:
     ~DiscreteSearch() = default;
 
     void addObstacle(ObstacleT obstacle) {obstacles_.push_back(obstacle);}
+    void setMaximumIterations(size_t max_iter) {max_iter_ = max_iter;}
+    void setMetric(Metric metric) {metric_ = metric;}
     void setSpaceLimits(std::vector<std::pair<T, T>> limits);
+    void setStepSize(T step_size) {step_size_ = step_size;}
     void setSystem(SystemT system) {system_ = system;}
 
-    bool isSolutionFound() const {return is_solution_found_;}
+    void getGoal(NodeT*& goal) {goal = goal_;}
+    void getMaximumIterations(size_t& max_iter) {max_iter = max_iter_;}
+    void getMetric(Metric& metric) {metric = metric_;}
+    void getObstacles(std::vector<ObstacleT>& obstacles) {obstacles = obstacles_;}
     void getSolution(std::vector<NodeT*>& solution);
+    void getSpaceLimits(std::vector<std::pair<T, T>>& limits) {limits = limits_;}
+    T getStepSize() const {return step_size_;}
+    void getSystem(SystemT& system) {system = system_;}
+
+    bool isSolutionFound() const {return is_solution_found_;}
     void run();
 
 protected:
