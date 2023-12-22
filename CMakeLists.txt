@@ -10,6 +10,3 @@ add_subdirectory(examples)
 set(Matplotplusplus_DIR "matplotplusplus")
 include_directories(${Matplotplusplus_DIR})
 add_subdirectory(${Matplotplusplus_DIR})
-
-target_link_libraries(xi-planning-algorithms PUBLIC matplot)
-target_link_libraries(xi-planning-algorithms PUBLIC XiPlanningAlgorithms)

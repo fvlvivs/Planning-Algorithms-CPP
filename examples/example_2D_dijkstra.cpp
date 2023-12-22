@@ -69,6 +69,8 @@ int main() {
 
     // plot
     auto fig = matplot::figure(true);
+    fig->width(800);
+    fig->height(800);
     matplot::hold(matplot::on);
     matplot::grid(matplot::on);
 
@@ -87,8 +89,9 @@ int main() {
     matplot::xlim({limits[0].first, limits[0].second});
     matplot::ylim({limits[1].first, limits[1].second});
     matplot::title("2D Dijkstra");
-    matplot::xlabel("x");
-    matplot::ylabel("y");
+    matplot::xlabel("x [m]");
+    matplot::ylabel("y [m]");
+    matplot::legend({"start", "goal", "obstacle", "solution"});
     matplot::show();
 
     return 0;

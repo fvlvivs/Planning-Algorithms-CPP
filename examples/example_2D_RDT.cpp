@@ -69,6 +69,8 @@ int main() {
 
     // plot
     auto fig = matplot::figure(true);
+    fig->width(800);
+    fig->height(800);
     matplot::hold(matplot::on);
     matplot::grid(matplot::on);
 
@@ -91,8 +93,9 @@ int main() {
     matplot::xlim({-1, 10});
     matplot::ylim({-1, 10});
     matplot::title("2D RDT");
-    matplot::xlabel("x");
-    matplot::ylabel("y");
+    matplot::xlabel("x [m]");
+    matplot::ylabel("y [m]");
+    matplot::legend({"start", "goal", "obstacle", "solution"});
     matplot::show();
 
     return 0;

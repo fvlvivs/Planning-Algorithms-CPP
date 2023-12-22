@@ -73,6 +73,8 @@ int main() {
 
     // plot
     auto fig = matplot::figure(true);
+    fig->width(800);
+    fig->height(800);
     matplot::hold(matplot::on);
     matplot::grid(matplot::on);
 
@@ -93,9 +95,9 @@ int main() {
     matplot::ylim({limits[1].first, limits[1].second});
     matplot::zlim({limits[2].first, limits[2].second});
     matplot::title("3D A*");
-    matplot::xlabel("x");
-    matplot::ylabel("y");
-    matplot::zlabel("z");
+    matplot::xlabel("x [m]");
+    matplot::ylabel("y [m]");
+    matplot::zlabel("z [m]");
     matplot::show();
 
     return 0;
