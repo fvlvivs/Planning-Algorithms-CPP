@@ -1,11 +1,11 @@
-cff-version: 1.2.0
+cff-version: 1.0.0
 message: "If you use this software, please cite it as below."
 authors:
 - family-names: "Di Luzio"
   given-names: "Fulvio"
-title: "xi - Planning Algorithms: a C++ template library"
+title: "xi - Planning Algorithms: a C++ template library for motion planning"
 version: 1.0.0
-date-released: 2017-12-18
+date-released: 2023-12-22
 url: "https://github.com/fvlvivs/xi-planning-algorithms"
 license: "MIT"
 keywords:
