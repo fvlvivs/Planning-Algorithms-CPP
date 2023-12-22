@@ -28,6 +28,10 @@ target_link_libraries(${PROJECT_NAME} xi-planning_algorithms)
 ## License  
 This project is licensed under the MIT License.
 
+## Support
+If you find this project useful, consider to star it on GitHub. If you use it in your projects, please cite it!
+
+
 ## Examples
 The examples folder contains a few examples on how to use the library.
 
