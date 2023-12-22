@@ -20,12 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+
 #include <cstdio>
 #include <XiPlanningAlgorithms/Core.hpp>
 #include <XiPlanningAlgorithms/Polygon.hpp>
 #include <XiPlanningAlgorithms/Dijkstra.hpp>
 
-#include <matplot/matplot.h>
 #include "PlotUtils.hpp"
 
 
@@ -67,13 +67,11 @@ int main() {
         return 0;
     }
 
-
-
+    // plot
     auto fig = matplot::figure(true);
     matplot::hold(matplot::on);
     matplot::grid(matplot::on);
-    // fig->width(fig->width() * 2);
-    // fig->height(fig->height() * 2);
+
     system.moveToPoint(*start);
     plotPolygon<double, 2>(system, "b");
 

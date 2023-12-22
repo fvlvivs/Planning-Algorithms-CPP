@@ -64,13 +64,13 @@ void plotFace(Polygon<T, 3>& face, std::string color) {
     pl->color(color);
 }
 
-template <typename T, size_t dim>
+template <typename T>
 void plotPolyhedra(Polyhedra<T> polyhedra, std::string color) {
     std::vector<Polygon<T, 3>> faces;
     polyhedra.getFaces(faces);
 
     for (auto face: faces) {
-        plotFace(face, color);
+        plotFace<T, 3>(face, color);
     }
 }
 
@@ -92,7 +92,48 @@ void plotPath(std::vector<Node<T, dim>*> path, std::string color) {
         auto pl = matplot::plot3(x, y, z);
         pl->color(color);
     }
+}
 
+template <typename T>
+void createParallelepiped(Polyhedra<T> &poly, T width, T height, T depth) {
+    Point<T, 3> p1(width, 0, depth);
+    Point<T, 3> p2(width, height, depth);
+    Point<T, 3> p3(0, height, depth);
+    Point<T, 3> p4(0, 0, depth);
+    Polygon<T, 3> face1 = Polygon<T, 3>({p1, p2, p3, p4});
+
+    p1 = Point<T, 3>{width, 0, 0};
+    p2 = Point<T, 3>(width, height, 0);
+    p3 = Point<T, 3>(0, height, 0);
+    p4 = Point<T, 3>(0, 0, 0);
+    Polygon<T, 3> face2 = Polygon<T, 3>({p1, p2, p3, p4});
+
+    p1 = Point<T, 3>(width, 0, depth);
+    p2 = Point<T, 3>(width, height, depth);
+    p3 = Point<T, 3>(width, height, 0);
+    p4 = Point<T, 3>(width, 0, 0);
+    Polygon<T, 3> face3 = Polygon<T, 3>({p1, p2, p3, p4});
+
+    p1 = Point<T, 3>(0, 0, depth);
+    p2 = Point<T, 3>(0, height, depth);
+    p3 = Point<T, 3>(0, height, 0);
+    p4 = Point<T, 3>(0, 0, 0);
+    Polygon<T, 3> face4 = Polygon<T, 3>({p1, p2, p3, p4});
+
+    p1 = Point<T, 3>(width, height, depth);
+    p2 = Point<T, 3>(width, height, 0);
+    p3 = Point<T, 3>(0, height, 0);
+    p4 = Point<T, 3>(0, height, depth);
+    Polygon<T, 3> face5 = Polygon<T, 3>({p1, p2, p3, p4});
+
+    p1 = Point<T, 3>(width, 0, depth);
+    p2 = Point<T, 3>(width, 0, 0);
+    p3 = Point<T, 3>(0, 0, 0);
+    p4 = Point<T, 3>(0, 0, depth);
+    Polygon<T, 3> face6 = Polygon<T, 3>({p1, p2, p3, p4});
+
+    Polyhedra<T> cube = Polyhedra<T>({face1, face2, face3, face4, face5, face6});
+    poly = cube;
 }
 
 
