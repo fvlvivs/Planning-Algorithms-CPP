@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//
-// Created by fulvius on 09/12/23.
-//
 
 #ifndef XI_PLANNING_ALGORITHMS_RDT_HPP
 #define XI_PLANNING_ALGORITHMS_RDT_HPP
@@ -56,7 +53,8 @@ public:
     RDT() = default;
     ~RDT() = default;
     explicit RDT(NodeT* start, NodeT* goal);
-    bool run();
+    void run();
+    bool isSolutionFound() const {return is_solution_found_;}
 
     void addObstacle(ObstacleT obstacle) {obstacles_.push_back(obstacle);}
     void setBiasedIterations(size_t biased_iter) {biased_iter_ = biased_iter;}
@@ -83,6 +81,7 @@ public:
     void getOptimizationIterations(size_t& optimization_iter) {optimization_iter = optimization_iter_;}
     void getRewiringRadius(T& rewiring_radius) {rewiring_radius = rewiring_radius_;}
     void getPathCheckResolution(T& path_check_resolution) {path_check_resolution = path_check_resolution_;}
+    void getSolution(std::vector<NodeT*>& solution);
     T getSolutionCost() {return goal_->cost;}
     void getStart(NodeT*& start) {start = start_;}
 
@@ -119,6 +118,7 @@ private:
     T bias_sampling_radius_ {0.9};
     std::vector<NodeT*> nodes_;
     std::vector<ObstacleT> obstacles_;
+    bool is_solution_found_ {false};
 };
 
 
@@ -226,7 +226,7 @@ bool RDT<T, dim>::doesPathLieInFreeSpace(NodeT*& point, NodeT*& new_point) {
 
 // bool run()
 template <typename T, size_t dim>
-bool RDT<T, dim>::run() {
+void RDT<T, dim>::run() {
     nodes_.push_back(start_);
     size_t iter = 0;
     while (iter < max_iter_) {
@@ -255,12 +255,12 @@ bool RDT<T, dim>::run() {
                 goal_->cost = point->cost + metric_(point, goal_);
                 printf("Goal found in %zu iterations\n", iter);
                 optimizePath();
-                return true;
+                is_solution_found_ = true;
+                return;
             }
         }
         iter++;
     }
-    return false;
 }
 
 // void optimizePathWithTriangleInequality()
@@ -352,6 +352,7 @@ void RDT<T, dim>::optimizePathWithBiasedSampling() {
                     n2->cost = cost;
                     node->cost = metric_(n2, node) + n2->cost;
                     node->parent = n2;
+                    nodes_.push_back(n2);
                 }
             }
         }
@@ -373,6 +374,17 @@ void RDT<T, dim>::optimizePath() {
     }
 }
 
+// void getSolution()
+template<typename T, size_t dim>
+void RDT<T, dim>::getSolution(std::vector<NodeT*>& solution) {
+    solution.clear();
+    NodeT* node = goal_;
+    while (node != nullptr) {
+        solution.push_back(node);
+        node = node->parent;
+    }
+    std::reverse(solution.begin(), solution.end());
+}
 
 #endif //XI_PLANNING_ALGORITHMS_RDT_HPP
 
