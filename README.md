@@ -22,6 +22,10 @@ target_link_libraries(${PROJECT_NAME} xi-planning_algorithms)
 ## Examples
 The examples folder contains a few examples on how to use the library.
 
+- 2D Dijkstra ![2D Dijkstra](./images/2d_dijkstra.png)
+- 3D A* ![3D A*](./images/3d_astar.png)
+- 2D RDT* ![2D RDT*](./images/2d_rdt.png)
+[//]: # (- 3D RDT* ![3D RDT*]&#40;./images/3d_rdt.png&#41;)
 
 ## License  
 This project is licensed under the MIT License.
