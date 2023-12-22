@@ -3,11 +3,17 @@
 A small C++ template library for planning algorithms. It is not meant to be the most efficient one but to offer a simple and easy to understand implementation of the most common planning algorithms.
 Note that RDT (Random Dense Tree) implements the SMART algorithm version of RRT, which is a rapid convergence implementation.
 
-## Algorithms
+### Algorithms
 - 2D Dijkstra / A*
 - 3D Dijkstra / A*
 - 2D RDT*
 - 3D RDT*
+
+### Notable Features
+- One code for 2D and 3D planning algorithms;
+- representing system and obstacles as (convex) polytopes;
+- collision detection using Separating Axis Theorem (SAT);
+- generic metric functions.
 
 ## Dependencies
 - [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page), a powerful C++ template library for linear algebra;
