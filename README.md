@@ -1,4 +1,4 @@
-# &xi; - Planning Algorithms
+# Planning Algorithms C++
 
 A small C++ template library for planning algorithms. It is not meant to be the most efficient one but to offer a simple and easy to understand implementation of the most common planning algorithms.
 Note that RDT (Random Dense Tree) implements the SMART algorithm version of RRT, which is a rapid convergence implementation.
