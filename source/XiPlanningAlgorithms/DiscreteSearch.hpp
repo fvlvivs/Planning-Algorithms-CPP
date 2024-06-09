@@ -81,6 +81,7 @@ protected:
     void get2DActions(std::vector<NodeT*>& actions);
     void get3DActions(std::vector<NodeT*>& actions);
     void expandNode(NodeT* node);
+    void getUniqueHash(NodeT* node, size_t& id);
 
     virtual void orderPriorityQueue() = 0;
     virtual void updateNewNodeCost(NodeT* node, NodeT* new_node) = 0;
@@ -211,6 +212,17 @@ void DiscreteSearch<T, dim>::get3DActions(std::vector<NodeT*>& actions) {
     actions.emplace_back(new NodeT(0, -step_size_, 0));
     actions.emplace_back(new NodeT(step_size_, 0, 0));
     actions.emplace_back(new NodeT(-step_size_, 0, 0));
+}
+
+// void getUniqueHash(NodeT* node, size_t& id)
+template <typename T, size_t dim>
+void DiscreteSearch<T, dim>::getUniqueHash(DiscreteSearch::NodeT *node, size_t &id) {
+    // FNV-1a hash type
+    id = 2166136261;
+    id = (id ^ (size_t(node->x() * 2654435769)) << 16);
+    id = (id ^ (size_t(node->y() * 2654435769)) << 8);
+    if (dim == 3)
+        id = (id ^ (size_t(node->z() * 2654435769)));
 }
 
 // void expandNode(NodeT* node)
