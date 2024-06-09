@@ -120,6 +120,13 @@ struct PointDistribution {
 
 };
 
+template <typename T>
+struct NodeComparator {
+    bool operator()(const T* a, const T* b) const {
+        return (a->cost_to_come + a->cost_to_go) > (b->cost_to_come + b->cost_to_go);
+    }
+};
+
 // 2D
 typedef Point<float, 2> Point2f;
 typedef Point<double, 2> Point2d;
