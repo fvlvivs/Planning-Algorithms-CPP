@@ -35,17 +35,9 @@ public:
     ~AStar() = default;
 
 private:
-    void orderPriorityQueue();
     void updateNewNodeCost(NodeT* node, NodeT* new_node);
     void assignMaximumCost(NodeT* node);
 };
-
-// void orderPriorityQueue()
-template <typename T, size_t dim>
-void AStar<T, dim>::orderPriorityQueue() {
-    std::sort(this->priority_queue_.begin(), this->priority_queue_.end(),
-              [](NodeT* a, NodeT* b) {return a->cost_to_come + a->cost_to_go < b->cost_to_come + b->cost_to_go;});
-}
 
 // void updateNewNodeCost(NodeT* node, NodeT* new_node)
 template <typename T, size_t dim>

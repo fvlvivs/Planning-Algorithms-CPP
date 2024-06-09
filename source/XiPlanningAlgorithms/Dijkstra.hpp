@@ -31,24 +31,14 @@ template <typename T, size_t dim>
 class Dijkstra : public DiscreteSearch<T, dim> {
     typedef Node<T, dim> NodeT;
 
-
 public:
     Dijkstra(NodeT* start, NodeT* goal) : DiscreteSearch<T, dim>(start, goal) {}
     ~Dijkstra() = default;
 
 private:
-    void orderPriorityQueue();
     void updateNewNodeCost(NodeT* node, NodeT* new_node);
     void assignMaximumCost(NodeT* node);
 };
-
-// void orderPriorityQueue()
-template <typename T, size_t dim>
-void Dijkstra<T, dim>::orderPriorityQueue() {
-    std::sort(this->priority_queue_.begin(), this->priority_queue_.end(),
-              [](NodeT* a, NodeT* b) {return a->cost_to_come < b->cost_to_come;});
-}
-
 
 // void updateNewNodeCost(NodeT* node, NodeT* new_node)
 template <typename T, size_t dim>

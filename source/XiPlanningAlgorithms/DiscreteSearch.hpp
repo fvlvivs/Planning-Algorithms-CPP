@@ -74,18 +74,14 @@ public:
 
 protected:
     bool isGoalWithinTolerance(NodeT* node) const;
-    bool isNodeInPriorityQueue(NodeT* node);
-    bool isNodeAlreadyExplored(NodeT* node);
     bool isNodeInSpaceContained(NodeT* node) const;
     bool isSystemInCollision(NodeT* node);
-    bool getNodeFromPriorityQueue(NodeT* node);
     void getActions(std::vector<NodeT*>& actions);
     void get2DActions(std::vector<NodeT*>& actions);
     void get3DActions(std::vector<NodeT*>& actions);
     void expandNode(NodeT* node);
     void getUniqueHash(NodeT* node, size_t& id);
 
-    virtual void orderPriorityQueue() = 0;
     virtual void updateNewNodeCost(NodeT* node, NodeT* new_node) = 0;
     virtual void assignMaximumCost(NodeT* node) = 0;
 
@@ -99,11 +95,9 @@ protected:
     Metric metric_ {euclideanMetric};
     SystemT system_;
     std::vector<std::pair<T, T>> limits_;
-    std::vector<NodeT*> priority_queue_;
-    std::vector<NodeT*> visited_nodes_;
     std::vector<ObstacleT> obstacles_;
     std::unordered_map<size_t, NodeT*> coord_to_node_;
-    std::priority_queue<NodeT*, std::vector<NodeT*>, NodeComparator<NodeT>> priority_queue_2_;
+    std::priority_queue<NodeT*, std::vector<NodeT*>, NodeComparator<NodeT>> priority_queue_;
 
 };
 
@@ -124,32 +118,6 @@ bool DiscreteSearch<T, dim>::isGoalWithinTolerance(NodeT *node) const {
     return metric_(node, goal_) < goal_tol_;
 }
 
-// bool isNodeInPriorityQueue(NodeT* node)
-template<typename T, size_t dim>
-bool DiscreteSearch<T, dim>::isNodeInPriorityQueue(NodeT* node) {
-    auto it = std::find_if(
-            priority_queue_.begin(),
-            priority_queue_.end(),
-            [&node](NodeT* n) {
-                return *n == node;
-            });
-
-    return it != priority_queue_.end();
-}
-
-// bool isNodeAlreadyExplored(NodeT* node)
-template<typename T, size_t dim>
-bool DiscreteSearch<T, dim>::isNodeAlreadyExplored(NodeT* node) {
-    auto it = std::find_if(
-            visited_nodes_.begin(),
-            visited_nodes_.end(),
-            [node](const NodeT* n) {
-                return *n == node;
-            });
-
-    return it != visited_nodes_.end();
-}
-
 // bool isNodeInSpaceContained(NodeT* node)
 template<typename T, size_t dim>
 bool DiscreteSearch<T, dim>::isNodeInSpaceContained(NodeT* node) const {
@@ -158,23 +126,6 @@ bool DiscreteSearch<T, dim>::isNodeInSpaceContained(NodeT* node) const {
             return false;
     }
     return true;
-}
-
-// bool getNodeFromPriorityQueue(NodeT* node)
-template<typename T, size_t dim>
-bool DiscreteSearch<T, dim>::getNodeFromPriorityQueue(NodeT* node) {
-    auto it = std::find_if(
-            priority_queue_.begin(),
-            priority_queue_.end(),
-            [&node](NodeT* n) {
-                return *n == node;
-            });
-
-    if (it != priority_queue_.end()) {
-        node = *it;
-        return true;
-    }
-    return false;
 }
 
 // bool isSystemInCollision(NodeT* node)
@@ -266,7 +217,7 @@ void DiscreteSearch<T, dim>::expandNode(DiscreteSearch::NodeT *node) {
                         
             new_node->setVisited(true);
             coord_to_node_.insert({hash_value, new_node});
-            priority_queue_2_.push(new_node);
+            priority_queue_.push(new_node);
         }
     }
 }
@@ -278,11 +229,11 @@ void DiscreteSearch<T, dim>::run() {
     size_t index;
     getUniqueHash(start_, index);
     coord_to_node_.insert({index, start_});
-    priority_queue_2_.push(start_);
+    priority_queue_.push(start_);
 
     size_t i = 0;
-    while (!priority_queue_2_.empty() && i < max_iter_) {
-        NodeT* node = priority_queue_2_.top();
+    while (!priority_queue_.empty() && i < max_iter_) {
+        NodeT* node = priority_queue_.top();
 
         if (isGoalWithinTolerance(node)) {
             goal_->cost_to_come = node->cost_to_come;
@@ -291,7 +242,7 @@ void DiscreteSearch<T, dim>::run() {
             printf("Solution found in %zu iterations\n", i);
             break;
         }
-        priority_queue_2_.pop();
+        priority_queue_.pop();
         expandNode(node);
         i++;
     }
