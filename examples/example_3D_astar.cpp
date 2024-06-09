@@ -23,9 +23,9 @@
 
 #include <cstdio>
 #include <chrono>
-#include <XiPlanningAlgorithms/Core.hpp>
-#include <XiPlanningAlgorithms/Polyhedra.hpp>
-#include <XiPlanningAlgorithms/AStar.hpp>
+#include <PlanningAlgorithmsCPP/Core.hpp>
+#include <PlanningAlgorithmsCPP/Polyhedra.hpp>
+#include <PlanningAlgorithmsCPP/AStar.hpp>
 
 #include "PlotUtils.hpp"
 

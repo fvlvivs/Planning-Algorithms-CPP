@@ -22,9 +22,9 @@
 
 
 #include <cstdio>
-#include <XiPlanningAlgorithms/Core.hpp>
-#include <XiPlanningAlgorithms/Polyhedra.hpp>
-#include <XiPlanningAlgorithms/RDT.hpp>
+#include <PlanningAlgorithmsCPP/Core.hpp>
+#include <PlanningAlgorithmsCPP/Polyhedra.hpp>
+#include <PlanningAlgorithmsCPP/RDT.hpp>
 
 #include "PlotUtils.hpp"
 

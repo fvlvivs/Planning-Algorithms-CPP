@@ -24,9 +24,9 @@
 #ifndef PLANNING_ALGORITHMS_CPP_PLOTUTILS_HPP
 #define PLANNING_ALGORITHMS_CPP_PLOTUTILS_HPP
 
-#include <XiPlanningAlgorithms/Core.hpp>
-#include <XiPlanningAlgorithms/Polygon.hpp>
-#include <XiPlanningAlgorithms/Polyhedra.hpp>
+#include <PlanningAlgorithmsCPP/Core.hpp>
+#include <PlanningAlgorithmsCPP/Polygon.hpp>
+#include <PlanningAlgorithmsCPP/Polyhedra.hpp>
 
 #include <matplot/matplot.h>
 

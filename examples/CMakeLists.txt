@@ -22,13 +22,13 @@ add_executable(
 )
 
 target_link_libraries(example_2D_dijkstra.cpp PUBLIC matplot)
-target_link_libraries(example_2D_dijkstra.cpp PRIVATE XiPlanningAlgorithms)
+target_link_libraries(example_2D_dijkstra.cpp PRIVATE PlanningAlgorithmsCPP)
 
 target_link_libraries(example_3D_astar PUBLIC matplot)
-target_link_libraries(example_3D_astar PRIVATE XiPlanningAlgorithms)
+target_link_libraries(example_3D_astar PRIVATE PlanningAlgorithmsCPP)
 
 target_link_libraries(example_2D_RDT PUBLIC matplot)
-target_link_libraries(example_2D_RDT PRIVATE XiPlanningAlgorithms)
+target_link_libraries(example_2D_RDT PRIVATE PlanningAlgorithmsCPP)
 
 target_link_libraries(example_3D_RDT PUBLIC matplot)
-target_link_libraries(example_3D_RDT PRIVATE XiPlanningAlgorithms)
+target_link_libraries(example_3D_RDT PRIVATE PlanningAlgorithmsCPP)
