@@ -37,6 +37,11 @@ U euclideanMetric(T* a, T* b) {
 }
 
 template <typename T, typename U = typename T::value_type>
+U manhattanMetric(T* a, T* b) {
+    return (*b - *a).template lpNorm<1>();
+}
+
+template <typename T, typename U = typename T::value_type>
 void getPlaneNormal(T& a, T& b, T& c, T& n) {
     n = (b - a).cross(c - a);
 }
