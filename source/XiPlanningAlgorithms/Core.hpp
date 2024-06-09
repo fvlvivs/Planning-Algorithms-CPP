@@ -27,7 +27,7 @@
 #include <random>
 #include <cassert>
 #include <vector>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 
 // Point
@@ -65,9 +65,18 @@ struct Node : public Point<T, dim> {
     T cost_to_go;
     Node<T, dim> *parent {nullptr};
     T eps {1e-6};
+    bool is_visited {false};
 
     bool operator == (const Node<T, dim>* rhs) const {
         return (*this - *rhs).norm() < eps;
+    }
+
+    bool isVisited() const {
+        return is_visited;
+    }
+
+    void setVisited(bool flag) {
+        is_visited = flag;
     }
 
 };
