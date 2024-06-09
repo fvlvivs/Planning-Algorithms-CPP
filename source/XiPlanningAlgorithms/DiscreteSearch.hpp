@@ -24,6 +24,8 @@
 #ifndef XI_PLANNING_ALGORITHMS_DISCRETESEARCH_HPP
 #define XI_PLANNING_ALGORITHMS_DISCRETESEARCH_HPP
 
+#include <queue>
+#include <unordered_map>
 #include <type_traits>
 
 #include "utils.hpp"
@@ -91,8 +93,8 @@ protected:
     NodeT *goal_;
 
     size_t max_iter_ {1000};
-    T step_size_ {0.5};
-    T goal_tol_ {0.1};
+    T step_size_ {1};
+    T goal_tol_ {1};
     bool is_solution_found_ {false};
     Metric metric_ {euclideanMetric};
     SystemT system_;
@@ -100,6 +102,8 @@ protected:
     std::vector<NodeT*> priority_queue_;
     std::vector<NodeT*> visited_nodes_;
     std::vector<ObstacleT> obstacles_;
+    std::unordered_map<size_t, NodeT*> coord_to_node_;
+    std::priority_queue<NodeT*, std::vector<NodeT*>, NodeComparator<NodeT>> priority_queue_2_;
 
 };
 
@@ -232,52 +236,54 @@ void DiscreteSearch<T, dim>::expandNode(DiscreteSearch::NodeT *node) {
     getActions(actions);
 
     for (auto &action : actions) {
+
         NodeT* new_node = new NodeT;
         *new_node = *node + *action;
         T cost = node->cost_to_come + metric_(node, new_node);
-
-        if (isNodeAlreadyExplored(new_node))
-            continue;
-
-        if (!isNodeInSpaceContained(new_node)) {
-            assignMaximumCost(new_node);
-            visited_nodes_.push_back(new_node);
-            continue;
-        }
-
-        if (isSystemInCollision(new_node)) {
-            assignMaximumCost(new_node);
-            visited_nodes_.push_back(new_node);
-            continue;
-        }
-
-        new_node->parent = node;
-
-        if (!isNodeInPriorityQueue(new_node)) {
-            updateNewNodeCost(node, new_node);
-            priority_queue_.push_back(new_node);
-        } else {
-            if (getNodeFromPriorityQueue(new_node)) {
-                if (new_node->cost_to_come > cost) {
-                    new_node->parent = node;
-                    updateNewNodeCost(node, new_node);
+        size_t hash_value;
+        getUniqueHash(new_node, hash_value);
+        
+        auto it = coord_to_node_.find(hash_value);
+        if (it != coord_to_node_.end()) { // already in priority queue
+            auto n = it->second;
+            if (!n->isVisited()) {
+                if (n->cost_to_come > cost) {
+                    n->parent = node;
+                    n->cost_to_come = cost;
+                    updateNewNodeCost(node, n);
+                    n->setVisited(true);
                 }
             }
+        } else {  // not in priority queue
+            new_node->cost_to_come = cost;
+            new_node->parent = node;
+
+            if (!isNodeInSpaceContained(new_node))
+                assignMaximumCost(new_node);
+
+            if (isSystemInCollision(new_node))
+                assignMaximumCost(new_node);
+                        
+            new_node->setVisited(true);
+            coord_to_node_.insert({hash_value, new_node});
+            priority_queue_2_.push(new_node);
         }
     }
-    visited_nodes_.push_back(node);
 }
 
 // void run()
 template <typename T, size_t dim>
 void DiscreteSearch<T, dim>::run() {
-    size_t i = 0;
-    priority_queue_.push_back(start_);
 
-    while (!priority_queue_.empty() && i < max_iter_) {
-        orderPriorityQueue();
-        NodeT* node = priority_queue_.front();
-        priority_queue_.erase(priority_queue_.begin());
+    size_t index;
+    getUniqueHash(start_, index);
+    coord_to_node_.insert({index, start_});
+    priority_queue_2_.push(start_);
+
+    size_t i = 0;
+    while (!priority_queue_2_.empty() && i < max_iter_) {
+        NodeT* node = priority_queue_2_.top();
+
         if (isGoalWithinTolerance(node)) {
             goal_->cost_to_come = node->cost_to_come;
             goal_->parent = node->parent;
@@ -285,6 +291,7 @@ void DiscreteSearch<T, dim>::run() {
             printf("Solution found in %zu iterations\n", i);
             break;
         }
+        priority_queue_2_.pop();
         expandNode(node);
         i++;
     }
