@@ -35,9 +35,9 @@ public:
     ~AStar() = default;
 
 private:
-    void orderPriorityQueue() override;
-    void updateNewNodeCost(NodeT* node, NodeT* new_node) override;
-    void assignMaximumCost(NodeT* node) override;
+    void orderPriorityQueue();
+    void updateNewNodeCost(NodeT* node, NodeT* new_node);
+    void assignMaximumCost(NodeT* node);
 };
 
 // void orderPriorityQueue()
