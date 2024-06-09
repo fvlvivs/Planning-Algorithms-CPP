@@ -19,13 +19,6 @@ Note that RDT (Random Dense Tree) implements the SMART algorithm version of RRT,
 - [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page), a powerful C++ template library for linear algebra;
 - [Matplotplusplus](https://github.com/alandefreitas/matplotplusplus), a simple to use plotting library for C++.
 
-## Installation
-Simply clone the repository into your project folder and add the following lines to your CMakeLists.txt:
-```cmake
-add_subdirectory(xi-planning_algorithms)
-target_link_libraries(${PROJECT_NAME} xi-planning_algorithms)
-```
-
 ## References
 - [Planning Algorithms](https://lavalle.pl/planning/), by Steven M. LaValle;
 - [Real Time Collision Detection](https://realtimecollisiondetection.net), by Christer Ericson;
@@ -36,7 +29,6 @@ This project is licensed under the MIT License.
 
 ## Support
 If you find this project useful, consider to star it on GitHub. If you use it in your projects, please cite it!
-
 
 ## Examples
 The examples folder contains a few examples on how to use the library.
