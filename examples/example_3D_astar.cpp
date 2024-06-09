@@ -22,6 +22,7 @@
 
 
 #include <cstdio>
+#include <chrono>
 #include <XiPlanningAlgorithms/Core.hpp>
 #include <XiPlanningAlgorithms/Polyhedra.hpp>
 #include <XiPlanningAlgorithms/AStar.hpp>
@@ -32,7 +33,7 @@
 int main() {
     printf("--- 3D A* example ---\n");
 
-    Node3d* start = new Node3d({0, 0, 0});
+    Node3d* start = new Node3d({1, 1, 1});
     Node3d* goal = new Node3d({6, 7, 3});
     AStar<double, 3> astar(start, goal);
 
@@ -55,15 +56,19 @@ int main() {
 
     // set space limits
     std::vector<std::pair<double, double>> limits;
-    limits.emplace_back(-1, 10);
-    limits.emplace_back(-1, 10);
-    limits.emplace_back(-1, 5);
+    limits.emplace_back(0, 10);
+    limits.emplace_back(0, 10);
+    limits.emplace_back(0, 5);
     astar.setSpaceLimits(limits);
 
     // settings
     astar.setMaximumIterations(3000);
 
+    const auto start_time = std::chrono::high_resolution_clock::now();
     astar.run();
+    const auto end_time = std::chrono::high_resolution_clock::now();
+    const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
+    printf("Planner took: %ld ms\n", duration);
 
     bool success = astar.isSolutionFound();
     if (!success) {

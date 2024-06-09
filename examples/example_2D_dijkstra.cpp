@@ -22,9 +22,11 @@
 
 
 #include <cstdio>
+#include <chrono>
 #include <XiPlanningAlgorithms/Core.hpp>
 #include <XiPlanningAlgorithms/Polygon.hpp>
 #include <XiPlanningAlgorithms/Dijkstra.hpp>
+#include <XiPlanningAlgorithms/AStar.hpp>
 
 #include "PlotUtils.hpp"
 
@@ -32,8 +34,8 @@
 int main() {
     printf("--- 2D Dijkstra example ---\n");
 
-    Node2d* start = new Node2d({0, 0});
-    Node2d* goal = new Node2d({6, 7});
+    Node2d* start = new Node2d({1, 1});
+    Node2d* goal = new Node2d({12, 7});
     Dijkstra<double, 2> dijkstra(start, goal);
 
     // set system
@@ -54,12 +56,16 @@ int main() {
 
     // set space limits
     std::vector<std::pair<double, double>> limits;
-    limits.emplace_back(-1, 10);
-    limits.emplace_back(-1, 10);
+    limits.emplace_back(0, 15);
+    limits.emplace_back(0, 15);
     dijkstra.setSpaceLimits(limits);
 
     // run
+    const auto start_time = std::chrono::high_resolution_clock::now();
     dijkstra.run();
+    const auto end_time = std::chrono::high_resolution_clock::now();
+    const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
+    printf("Planner took: %ld ms\n", duration);
 
     bool success = dijkstra.isSolutionFound();
     if (!success) {
