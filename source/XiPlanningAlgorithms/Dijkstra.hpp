@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 
-#ifndef XI_PLANNING_ALGORITHMS_DIJKSTRA_HPP
-#define XI_PLANNING_ALGORITHMS_DIJKSTRA_HPP
+#ifndef PLANNING_ALGORITHMS_CPP_DIJKSTRA_HPP
+#define PLANNING_ALGORITHMS_CPP_DIJKSTRA_HPP
 
 #include "Core.hpp"
 #include "DiscreteSearch.hpp"
@@ -53,4 +53,4 @@ void Dijkstra<T, dim>::assignMaximumCost(NodeT* node) {
     node->cost_to_come = std::numeric_limits<T>::max();
 }
 
-#endif //XI_PLANNING_ALGORITHMS_DIJKSTRA_HPP
+#endif //PLANNING_ALGORITHMS_CPP_DIJKSTRA_HPP

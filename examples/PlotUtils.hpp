@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 
-#ifndef XI_PLANNING_ALGORITHMS_PLOTUTILS_HPP
-#define XI_PLANNING_ALGORITHMS_PLOTUTILS_HPP
+#ifndef PLANNING_ALGORITHMS_CPP_PLOTUTILS_HPP
+#define PLANNING_ALGORITHMS_CPP_PLOTUTILS_HPP
 
 #include <XiPlanningAlgorithms/Core.hpp>
 #include <XiPlanningAlgorithms/Polygon.hpp>
@@ -175,4 +175,4 @@ void plotRDTNodes(std::vector<Node<T, dim>*> nodes, std::string color) {
 
 
 
-#endif //XI_PLANNING_ALGORITHMS_PLOTUTILS_HPP
+#endif //PLANNING_ALGORITHMS_CPP_PLOTUTILS_HPP

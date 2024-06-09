@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 
-#ifndef XI_PLANNING_ALGORITHMS_DISCRETESEARCH_HPP
-#define XI_PLANNING_ALGORITHMS_DISCRETESEARCH_HPP
+#ifndef PLANNING_ALGORITHMS_CPP_DISCRETESEARCH_HPP
+#define PLANNING_ALGORITHMS_CPP_DISCRETESEARCH_HPP
 
 #include <queue>
 #include <unordered_map>
@@ -263,4 +263,4 @@ void DiscreteSearch<T, dim>::getSolution(std::vector<NodeT*>& solution) {
     std::reverse(solution.begin(), solution.end());
 }
 
-#endif //XI_PLANNING_ALGORITHMS_DISCRETESEARCH_HPP
+#endif //PLANNING_ALGORITHMS_CPP_DISCRETESEARCH_HPP

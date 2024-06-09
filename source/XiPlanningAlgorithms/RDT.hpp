@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 
-#ifndef XI_PLANNING_ALGORITHMS_RDT_HPP
-#define XI_PLANNING_ALGORITHMS_RDT_HPP
+#ifndef PLANNING_ALGORITHMS_CPP_RDT_HPP
+#define PLANNING_ALGORITHMS_CPP_RDT_HPP
 
 #include <vector>
 #include <type_traits>
@@ -386,6 +386,6 @@ void RDT<T, dim>::getSolution(std::vector<NodeT*>& solution) {
     std::reverse(solution.begin(), solution.end());
 }
 
-#endif //XI_PLANNING_ALGORITHMS_RDT_HPP
+#endif //PLANNING_ALGORITHMS_CPP_RDT_HPP
 
 

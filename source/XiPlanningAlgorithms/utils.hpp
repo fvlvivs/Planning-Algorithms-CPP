@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 
-#ifndef XI_PLANNING_ALGORITHMS_UTILS_HPP
-#define XI_PLANNING_ALGORITHMS_UTILS_HPP
+#ifndef PLANNING_ALGORITHMS_CPP_UTILS_HPP
+#define PLANNING_ALGORITHMS_CPP_UTILS_HPP
 
 template <typename T>
 bool isTriangleCCW(T a, T b, T c) {
@@ -46,4 +46,4 @@ void getPlaneNormal(T& a, T& b, T& c, T& n) {
     n = (b - a).cross(c - a);
 }
 
-#endif //XI_PLANNING_ALGORITHMS_UTILS_HPP
+#endif //PLANNING_ALGORITHMS_CPP_UTILS_HPP

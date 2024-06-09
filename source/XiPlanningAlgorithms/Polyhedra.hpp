@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 
-#ifndef XI_PLANNING_ALGORITHMS_POLYHEDRA_HPP
-#define XI_PLANNING_ALGORITHMS_POLYHEDRA_HPP
+#ifndef PLANNING_ALGORITHMS_CPP_POLYHEDRA_HPP
+#define PLANNING_ALGORITHMS_CPP_POLYHEDRA_HPP
 
 #include "Core.hpp"
 #include "Polygon.hpp"
@@ -96,4 +96,4 @@ bool Polyhedra<T>::isPointIncluded(Point<T, dim> &point) {
 }
 
 
-#endif //XI_PLANNING_ALGORITHMS_POLYHEDRA_HPP
+#endif //PLANNING_ALGORITHMS_CPP_POLYHEDRA_HPP

@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 
-#ifndef XI_PLANNING_ALGORITHMS_ASTAR_HPP
-#define XI_PLANNING_ALGORITHMS_ASTAR_HPP
+#ifndef PLANNING_ALGORITHMS_CPP_ASTAR_HPP
+#define PLANNING_ALGORITHMS_CPP_ASTAR_HPP
 
 #include "DiscreteSearch.hpp"
 
@@ -54,4 +54,4 @@ void AStar<T, dim>::assignMaximumCost(NodeT* node) {
 }
 
 
-#endif //XI_PLANNING_ALGORITHMS_ASTAR_HPP
+#endif //PLANNING_ALGORITHMS_CPP_ASTAR_HPP
